@@ -1,0 +1,24 @@
+{
+  "name": "ai-jobs-market-info-visu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^7.9.0",
+    "express": "^4.17.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabrinalamghari/ai-job-market-info-visu.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/sabrinalamghari/ai-job-market-info-visu/issues"
+  },
+  "homepage": "https://github.com/sabrinalamghari/ai-job-market-info-visu#readme"
+}
