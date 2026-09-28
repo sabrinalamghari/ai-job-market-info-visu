@@ -1,17 +1,17 @@
-# AI Job Market Info Visu
+﻿# AI Job Market Info Visu
 
-Projet de visualisation du marché de l'emploi en IA pour 2025-2026.
+Squelette de page pour explorer le marché de l’emploi en IA en 2025–2026.
 
-- Analyse des offres par poste, salaire, expérience et localisation
-- Données issues du fichier CSV : ai_jobs_market_2025_2026.csv
-- Technologies : D3.js et Express
+## Ouvrir la page
 
-Objectif : explorer les tendances du marché de l'IA de façon claire et interactive.
+Ouvrir `index.html` directement dans un navigateur. Aucune installation ni compilation nécessaire : la page utilise uniquement HTML et CSS, sans JavaScript ni ressource externe.
 
-## Installation
+## Fichiers
 
-```bash
-npm install
-```
+- `index.html` : structure de la page et quatre emplacements de visualisation.
+- `styles.css` : apparence et grille responsive (deux colonnes sur grand écran, une sur mobile).
+- `ai_jobs_market_2025_2026.csv` : données disponibles en téléchargement depuis la page.
 
-Cette commande installe les dépendances du projet avant de le lancer.
+Les conteneurs `visualization-1` à `visualization-4` accueilleront les futures visualisations. Remplacer leur contenu temporaire et adapter les titres lors de leur intégration. Le CSV n’est pas chargé ni analysé pour le moment.
+
+Les dépendances D3 et Express déjà déclarées dans `package.json` ne sont pas utilisées par ce squelette.
