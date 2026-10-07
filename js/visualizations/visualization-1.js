@@ -3,6 +3,7 @@
   const container = document.getElementById("visualization-1");
   if (!container) return;
 
-  // À compléter : charger les données nécessaires et construire la visualisation.
-  // Remplacer le contenu temporaire de container au moment du rendu.
+  JobApp.subscribe(({ filteredJobs, jobs, quality, filters }) => {
+    
+  });
 })();
