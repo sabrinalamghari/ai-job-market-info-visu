@@ -49,9 +49,11 @@ const { jobs, quality } = JobData.prepareData(rows);
 
 ## Chargement commun entre toutes les visualisations
 
-`server.js` sert la page et D3 installé avec npm. Pour lancer le projet : `npm install`, puis `npm start`, et ouvrir http://localhost:3000.
+`server.js` sert la page et le fichier D3 installé par npm dans `node_modules/d3/dist/d3.min.js`. D3 est déclaré dans `package.json` et sa version est enregistrée dans `package-lock.json`. Pour lancer le projet : `npm install`, puis `npm start`, et ouvrir http://localhost:3000. Après installation des dépendances, un serveur statique comme `python -m http.server 8000` fonctionne également.
 
-`js/app.js` charge le CSV une seule fois, appelle `JobData.prepareData()` et transmet le résultat aux quatre visualisations. Le sélecteur de fichier permet de changer de CSV ; un fichier incompatible est signalé et les données précédentes sont conservées.
+`js/app.js` charge le CSV une seule fois sur chaque page qui l’inclut, appelle `JobData.prepareData()` et transmet le résultat aux visualisations présentes sur cette page. La page d’accueil contient les liens vers les visualisations ; la carte possède sa propre page dans `visualizations/visualization-1/visualization-1.html`. Le sélecteur de fichier sur cette page permet de changer de CSV ; un fichier incompatible est signalé et les données précédentes sont conservées.
+
+Le chemin du CSV est calculé depuis le fichier `js/app.js` avec `new URL("../data/ai_jobs_market_2025_2026.csv", document.currentScript.src)`. Il ne dépend donc pas du dossier de la page HTML.
 
 Chaque graphique reçoit les données au chargement et après chaque changement de filtre :
 

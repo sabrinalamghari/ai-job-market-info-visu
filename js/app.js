@@ -1,4 +1,5 @@
 const JobApp = (() => {
+  const csvUrl = new URL("../data/ai_jobs_market_2025_2026.csv", document.currentScript.src);
   const status = document.getElementById("data-status");
   const fileInput = document.getElementById("csv-file");
   const listeners = new Set();
@@ -51,7 +52,7 @@ const JobApp = (() => {
     try {
       const rows = file
         ? d3.csvParse(await file.text())
-        : await d3.csv("data/ai_jobs_market_2025_2026.csv");
+        : await d3.csv(csvUrl);
       const { jobs, quality } = JobData.prepareData(rows);
       state = { jobs, filteredJobs: jobs, quality, filters: { ...emptyFilters },
         filename: file ? file.name : "ai_jobs_market_2025_2026.csv" };
