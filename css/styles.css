@@ -36,6 +36,7 @@ h2 { margin: 0; font-size: 19px; font-weight: 650; }
 .visualization-link { display: block; text-decoration: none; }
 .visualization-link:hover { border-color: var(--accent); }
 .visualization-link .visualization-preview { border-style: solid; background: url("../visualizations/visualization-1/preview.svg") center / contain no-repeat #eaf3f8; }
+.visualization-link .visualization-preview-4 { background-image: url("../visualizations/visualization-4/preview.svg"); background-color: white; }
 .card-open { margin: 16px 0 0; color: var(--accent); font-size: 14px; font-weight: 600; }
 .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .card-number { color: var(--accent); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
