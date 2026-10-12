@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Exploration du marché de l’emploi en intelligence artificielle en 2025 et 2026.">
     <title>Marché de l’emploi en IA · 2025–2026</title>
+    <link rel="icon" type="image/svg+xml" href="css/favicon.svg">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="vendor/d3.min.js" defer></script>
-    <script src="js/data.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/visualizations/visualization-1.js" defer></script>
-    <script src="js/visualizations/visualization-2.js" defer></script>
-    <script src="js/visualizations/visualization-3.js" defer></script>
-    <script src="js/visualizations/visualization-4.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#contenu">Aller au contenu</a>
@@ -30,27 +24,20 @@
         <p class="eyebrow">Exploration des données</p>
         <h1 id="page-title">Le marché de l’emploi<br>en intelligence artificielle.</h1>
         <p class="intro-text">Un espace pour explorer les données de 2025 et 2026 à travers quatre visualisations.</p>
-        <p>
-          <label for="csv-file">Changer le fichier CSV :</label>
-          <input id="csv-file" type="file" accept=".csv,text/csv">
-        </p>
       </section>
       <section aria-labelledby="workspace-title">
         <div class="section-heading">
           <h2 id="workspace-title">Les visualisations</h2>
-          <span class="status" id="data-status" role="status" aria-live="polite">Chargement des données…</span>
         </div>
         <div class="visualization-grid">
-          <article class="visualization-card" aria-labelledby="title-1">
+          <a class="visualization-card visualization-link" href="visualizations/visualization-1/visualization-1.html" aria-labelledby="title-1">
             <header class="card-header">
               <span class="card-number" aria-hidden="true">01</span>
-              <h3 id="title-1">Visualisation 1</h3>
+              <h3 id="title-1">Les offres d’emploi dans le monde</h3>
             </header>
-            <!-- Remplacer le contenu de ce conteneur par la future visualisation. -->
-            <div class="visualization" id="visualization-1">
-              <p class="placeholder">Espace de visualisation<span>À venir</span></p>
-            </div>
-          </article>
+            <div class="visualization visualization-preview" aria-hidden="true"></div>
+            <p class="card-open">Explorer la carte <span aria-hidden="true">→</span></p>
+          </a>
           <article class="visualization-card" aria-labelledby="title-2">
             <header class="card-header">
               <span class="card-number" aria-hidden="true">02</span>

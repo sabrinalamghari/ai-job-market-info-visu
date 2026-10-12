@@ -33,6 +33,10 @@ h2 { margin: 0; font-size: 19px; font-weight: 650; }
 .status { padding: 4px 12px; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); font-size: 12px; }
 .visualization-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .visualization-card { min-width: 0; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+.visualization-link { display: block; text-decoration: none; }
+.visualization-link:hover { border-color: var(--accent); }
+.visualization-link .visualization-preview { border-style: solid; background: url("../visualizations/visualization-1/preview.svg") center / contain no-repeat #eaf3f8; }
+.card-open { margin: 16px 0 0; color: var(--accent); font-size: 14px; font-weight: 600; }
 .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .card-number { color: var(--accent); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 h3 { margin: 0; font-size: 16px; font-weight: 600; }
