@@ -6,10 +6,10 @@ const port = process.env.PORT || 3000;
 
 app.get("/", (request, response) => response.sendFile(path.join(__dirname, "index.html")));
 app.get("/index.html", (request, response) => response.sendFile(path.join(__dirname, "index.html")));
-app.get("/vendor/d3.min.js", (request, response) => {
+app.get("/node_modules/d3/dist/d3.min.js", (request, response) => {
   response.sendFile(path.join(__dirname, "node_modules/d3/dist/d3.min.js"));
 });
-for (const directory of ["css", "js", "data"]) {
+for (const directory of ["css", "js", "data", "visualizations"]) {
   app.use(`/${directory}`, express.static(path.join(__dirname, directory)));
 }
 

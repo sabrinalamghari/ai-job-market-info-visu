@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Carte interactive des offres d’emploi en intelligence artificielle par ville et pays en 2025 et 2026.">
+    <title>Carte des offres · Observatoire emploi & IA</title>
+    <link rel="icon" type="image/svg+xml" href="../../css/favicon.svg">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="visualization-1.css">
+    <script src="../../node_modules/d3/dist/d3.min.js" defer></script>
+    <script src="../../js/data.js" defer></script>
+    <script src="../../js/app.js" defer></script>
+    <script src="visualization-1.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="../../index.html" aria-label="Observatoire IA, accueil">
+          <span class="brand-mark" aria-hidden="true">ia.</span>
+          <span>Observatoire <strong>emploi & IA</strong></span>
+        </a>
+        <span class="period">Édition 2025–2026</span>
+      </div>
+    </header>
+    <main class="container" id="contenu">
+      <section class="intro" aria-labelledby="page-title">
+        <p><a href="../../index.html">← Retour aux visualisations</a></p>
+        <p class="eyebrow">Visualisation 01</p>
+        <h1 id="page-title">Les offres d’emploi<br>dans le monde.</h1>
+        <p class="intro-text">Explorez les villes et les pays selon le salaire, le métier et les possibilités de télétravail.</p>
+        <p>
+          <label for="csv-file">Changer le fichier CSV :</label>
+          <input id="csv-file" type="file" accept=".csv,text/csv">
+        </p>
+      </section>
+      <section aria-labelledby="map-title">
+        <div class="section-heading">
+          <h2 id="map-title">Carte mondiale</h2>
+          <span class="status" id="data-status" role="status" aria-live="polite">Chargement des données…</span>
+        </div>
+        <div class="visualization-card">
+          <div class="visualization" id="visualization-1">
+            <div class="map-filters">
+              <label>Secteur <select id="map-industry"><option value="">Tous</option></select></label>
+              <label>Catégorie <select id="map-job_category"><option value="">Toutes</option></select></label>
+              <label>Intitulé <select id="map-job_title"><option value="">Tous</option></select></label>
+              <label class="map-salary">Salaire annuel minimum
+                <output id="map-salary-value" for="map-salary">Tous les salaires</output>
+                <input id="map-salary" type="range" step="1000" disabled>
+              </label>
+              <label class="map-checkbox"><input id="map-remote" type="checkbox"> Télétravail possible</label>
+              <button id="map-reset-filters" type="button">Effacer les filtres de la carte</button>
+            </div>
+            <div class="map-navigation">
+              <label>Continent <select id="map-continent"><option value="">Monde</option></select></label>
+              <label>Pays <select id="map-country"><option value="">Choisir un pays</option></select></label>
+              <button id="map-reset-zoom" type="button">Vue mondiale</button>
+            </div>
+            <p class="map-help" id="map-help">Cliquez sur un pays pour zoomer. Utilisez la molette pour zoomer et faites glisser pour déplacer la carte. Cliquez sur un point vert pour afficher la ville et son nombre d’offres.</p>
+            <div class="map-canvas"><div class="map-city-label" role="status" hidden></div></div>
+            <p class="map-message" role="status">Chargement du fond de carte…</p>
+            <p class="map-legend">La surface des cercles représente le nombre d’offres par ville. Les pays en vert contiennent des offres.</p>
+            <div class="map-summary" aria-live="polite">
+              <p class="map-total"></p>
+              <p class="map-global"></p>
+              <p class="map-unlocated"></p>
+            </div>
+            <details class="map-details">
+              <summary>Voir les nombres par ville et pays</summary>
+              <div class="map-table-wrapper"><table>
+                <thead><tr><th scope="col">Pays</th><th scope="col">Ville</th><th scope="col">Offres</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+            </details>
+            <p class="map-source">Fond de carte : <a href="https://www.naturalearthdata.com/">Natural Earth</a>, domaine public.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="container site-footer">
+      <p>Marché de l’emploi en IA · 2025–2026</p>
+      <a href="../../data/ai_jobs_market_2025_2026.csv" download>Télécharger les données CSV <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>

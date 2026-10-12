@@ -2,49 +2,67 @@
 
 Page de visualisation du marché de l’emploi en intelligence artificielle en 2025–2026.
 
-Le projet contient pour le moment une page responsive avec quatre emplacements neutres. Les visualisations et le chargement des données restent à implémenter.
+La page d’accueil présente les quatre visualisations. Cliquer sur la première carte ouvre la page dédiée aux offres par ville et pays. Les trois autres visualisations restent à compléter.
+
+La première carte affiche en arrière-plan un aperçu SVG local de la carte mondiale et des offres du CSV, dans `visualizations/visualization-1/preview.svg`.
 
 ## Démarrage
 
-Ouvrir `index.html` dans un navigateur. Le squelette fonctionne sans installation, compilation ni serveur, avec du HTML, du CSS et du JavaScript natif.
+Depuis la racine du projet, lancer le serveur Express :
 
-Quand les visualisations chargeront le CSV avec `fetch`, servir le dossier avec un serveur HTTP local. Par exemple, si Python est installé, depuis la racine du projet :
+```sh
+npm install
+npm start
+```
+
+Ouvrir http://localhost:3000, puis cliquer sur « Les offres d’emploi dans le monde ».
+
+Après `npm install`, un serveur statique Python fonctionne également :
 
 ```sh
 python -m http.server 8000
 ```
 
-Puis ouvrir http://localhost:8000.
+Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localement. Le chargement des données nécessite HTTP : ouvrir directement le fichier HTML ne suffit pas.
 
 ## Arborescence
 
 ```text
 .
-├── index.html                         # Page et quatre conteneurs
+├── index.html                         # Accueil et liens vers les visualisations
 ├── css/
+│   ├── favicon.svg                    # Icône du site
 │   └── styles.css                     # Styles communs et responsive
 ├── data/
-│   └── ai_jobs_market_2025_2026.csv    # Données source
+│   ├── ai_jobs_market_2025_2026.csv    # Données source
+│   └── world-countries.geojson        # Fond de carte local
 ├── js/
-│   └── visualizations/
-│       ├── visualization-1.js         # Squelette pour le conteneur 1
-│       ├── visualization-2.js         # Squelette pour le conteneur 2
-│       ├── visualization-3.js         # Squelette pour le conteneur 3
-│       └── visualization-4.js         # Squelette pour le conteneur 4
-├── package.json                       # Dépendances précédemment déclarées
+│   ├── app.js                        # Chargement et filtres communs
+│   └── data.js                       # Préparation du CSV
+├── visualizations/
+│   ├── visualization-1/
+│   │   ├── visualization-1.html       # Page de la carte
+│   │   ├── visualization-1.css        # Styles de la carte
+│   │   └── visualization-1.js         # Dessin D3 et interactions
+│   ├── visualization-2.js             # Squelette
+│   ├── visualization-3.js             # Squelette
+│   └── visualization-4.js             # Squelette
+├── server.js                          # Serveur Express
+├── package.json                       # Dépendances npm
+├── package-lock.json                  # Versions exactes des dépendances
 └── README.md
 ```
 
 ## Ajouter une visualisation
 
-1. Compléter le fichier `js/visualizations/visualization-N.js` correspondant. Il récupère déjà le conteneur HTML `visualization-N` ; son code est isolé dans une fonction pour éviter les collisions entre fichiers.
-2. Remplacer le contenu temporaire du conteneur lors du rendu et adapter son titre dans `index.html`.
-3. Ajouter les styles dans `css/styles.css`. Préfixer les règles propres à une visualisation par son identifiant, par exemple `#visualization-1`.
+1. Créer une page HTML et une feuille CSS pour la visualisation dans son dossier sous `visualizations/`, comme pour la carte.
+2. Charger D3, `js/data.js`, `js/app.js`, puis le script de la visualisation avec `defer`, dans cet ordre. Inclure les éléments `csv-file` et `data-status` utilisés par `app.js`.
+3. Ajouter un lien depuis la carte correspondante dans `index.html`.
 
-Les quatre scripts sont déjà reliés à la page avec `defer`, pour être exécutés après l’analyse du HTML. Aucun graphique ni traitement des données n’est encore présent.
+L’accueil ne charge aucun script de visualisation. Chaque page charge seulement les ressources dont elle a besoin. Un lien de retour permet de rejoindre l’accueil.
 
-Le chemin du CSV depuis la page est `data/ai_jobs_market_2025_2026.csv`. Si plusieurs visualisations partagent du chargement ou de la préparation de données, ce code pourra être regroupé dans `js/data.js` au moment de son implémentation.
+`app.js` charge le CSV et transmet les données préparées via `JobApp.subscribe()`. Les chemins de chargement du CSV et du fond de carte sont calculés depuis les scripts avec `new URL()`. Voir `docs/transformation-donnees.md` et `docs/visualisation-1.md` pour les explications.
 
 ## Dépendances
 
-D3 et Express sont déjà déclarés dans `package.json`, mais ne sont pas utilisés par ce squelette. `npm install` n’est pas nécessaire pour ouvrir la page. Aucun framework, outil de compilation ou service externe n’a été ajouté.
+D3 et Express sont déclarés dans `package.json` et leurs versions exactes sont enregistrées dans `package-lock.json`. `npm install` les installe dans `node_modules`, qui reste exclu de Git. Le navigateur charge `node_modules/d3/dist/d3.min.js` ; Express sert uniquement ce fichier de dépendance via une route dédiée. La licence de D3 se trouve dans le paquet installé, à `node_modules/d3/LICENSE`. Aucun CDN ni outil de compilation n’est nécessaire.

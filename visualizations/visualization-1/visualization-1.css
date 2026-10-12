@@ -1,0 +1,46 @@
+#visualization-1 { display: block; place-items: normal; padding: 16px; border: 1px solid var(--border); }
+#visualization-1 .map-filters,
+#visualization-1 .map-navigation { display: flex; align-items: end; flex-wrap: wrap; gap: 12px 16px; }
+#visualization-1 .map-navigation { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+#visualization-1 label { display: grid; gap: 4px; font-size: 13px; flex: 1 1 180px; min-width: 0; }
+#visualization-1 select,
+#visualization-1 button { width: 100%; min-height: 38px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); font: inherit; }
+#visualization-1 button { width: auto; cursor: pointer; font-size: 13px; }
+#visualization-1 button:hover { border-color: var(--accent); }
+#visualization-1 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+#visualization-1 .map-salary { flex-basis: 100%; }
+#visualization-1 input[type="range"] { width: 100%; margin: 0; accent-color: var(--accent); }
+#visualization-1 .map-checkbox { display: flex; align-items: center; flex-basis: 260px; padding-block: 6px; }
+#visualization-1 input[type="checkbox"] { accent-color: var(--accent); }
+#visualization-1 output { color: var(--accent); font-weight: 600; }
+#visualization-1 .map-help,
+#visualization-1 .map-legend,
+#visualization-1 .map-source { margin-block: 12px; color: var(--muted); font-size: 12px; }
+#visualization-1 .map-canvas { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: #eaf3f8; }
+#visualization-1 svg { display: block; width: 100%; height: auto; cursor: grab; }
+#visualization-1 svg:active { cursor: grabbing; }
+#visualization-1 .map-ocean { fill: #eaf3f8; }
+#visualization-1 .map-graticule { fill: none; stroke: #cbdbe4; stroke-width: .5; vector-effect: non-scaling-stroke; pointer-events: none; }
+#visualization-1 .map-country { fill: #e1e5e8; stroke: #fff; stroke-width: .7; vector-effect: non-scaling-stroke; cursor: pointer; }
+#visualization-1 .map-country-active { fill: #bce2d6; }
+#visualization-1 .map-country:hover { fill: #8fc5b4; }
+#visualization-1 .map-city circle { fill: #216659; fill-opacity: .85; stroke: white; stroke-width: 1; }
+#visualization-1 .map-city text { fill: white; font-size: 11px; font-weight: 700; pointer-events: none; }
+#visualization-1 .map-city:focus circle { stroke: #edb032; stroke-width: 3; }
+#visualization-1 .map-city { cursor: pointer; }
+#visualization-1 .map-city-selected circle { stroke: #edb032; stroke-width: 3; }
+#visualization-1 .map-city-label { position: absolute; z-index: 1; max-width: calc(100% - 16px); padding: 6px 10px; border: 1px solid var(--accent); border-radius: 6px; background: white; color: var(--text); font-size: 13px; pointer-events: none; box-shadow: 0 2px 8px #202e3826; }
+#visualization-1 .map-message { margin: 10px 0; font-size: 13px; color: var(--muted); }
+#visualization-1 .map-message:empty,
+#visualization-1 .map-unlocated:empty { display: none; }
+#visualization-1 .map-summary { display: grid; gap: 8px; font-size: 14px; }
+#visualization-1 .map-summary p { margin: 0; }
+#visualization-1 .map-global { padding: 12px; border-left: 3px solid var(--accent); background: #e8f3ef; border-radius: 4px; }
+#visualization-1 .map-details { margin-top: 16px; font-size: 13px; }
+#visualization-1 summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+#visualization-1 .map-table-wrapper { max-height: 300px; overflow: auto; margin-top: 8px; }
+#visualization-1 table { width: 100%; border-collapse: collapse; text-align: left; }
+#visualization-1 th,
+#visualization-1 td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+#visualization-1 th:last-child,
+#visualization-1 td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
