@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Treemap des métiers de l’IA et de la data selon le nombre d’offres d’emploi en 2025 et 2026.">
+    <title>Treemap des métiers · Observatoire emploi & IA</title>
+    <link rel="icon" type="image/svg+xml" href="../../css/favicon.svg">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="visualization-4.css">
+    <script src="../../node_modules/d3/dist/d3.min.js" defer></script>
+    <script src="../../js/data.js" defer></script>
+    <script src="../../js/app.js" defer></script>
+    <script src="visualization-4.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="../../index.html" aria-label="Observatoire IA, accueil">
+          <span class="brand-mark" aria-hidden="true">ia.</span>
+          <span>Observatoire <strong>emploi & IA</strong></span>
+        </a>
+        <span class="period">Édition 2025–2026</span>
+      </div>
+    </header>
+    <main class="container" id="contenu">
+      <section class="intro" aria-labelledby="page-title">
+        <p><a href="../../index.html">← Retour aux visualisations</a></p>
+        <p class="eyebrow">Visualisation 04</p>
+        <h1 id="page-title">Les métiers de l’IA<br>et de la data.</h1>
+        <p class="intro-text">Chaque rectangle représente un métier, avec une surface proportionnelle à son nombre d’offres. Les métiers sont regroupés par catégorie.</p>
+        <p>
+          <label for="csv-file">Changer le fichier CSV :</label>
+          <input id="csv-file" type="file" accept=".csv,text/csv">
+        </p>
+      </section>
+      <section aria-labelledby="treemap-title">
+        <div class="section-heading">
+          <h2 id="treemap-title">Répartition des offres par métier</h2>
+          <span class="status" id="data-status" role="status" aria-live="polite">Chargement des données…</span>
+        </div>
+        <div class="visualization-card">
+          <div class="visualization" id="visualization-4">
+            <div class="treemap-filters">
+              <label>Niveau d’expérience <select id="treemap-experience_level"><option value="">Tous</option></select></label>
+              <label>Pays <select id="treemap-country"><option value="">Tous</option></select></label>
+              <label>Mode de travail <select id="treemap-remote_work"><option value="">Tous</option></select></label>
+              <label>Taille d’entreprise <select id="treemap-company_size"><option value="">Toutes</option></select></label>
+              <button id="treemap-reset-filters" type="button">Effacer les filtres</button>
+            </div>
+            <div class="treemap-options">
+              <label>Catégorie affichée <select id="treemap-category"><option value="">Toutes les catégories</option></select></label>
+              <label>Couleur des rectangles
+                <select id="treemap-color">
+                  <option value="">Uniforme</option>
+                  <option value="salary">Salaire annuel médian</option>
+                  <option value="growth">Croissance médiane de la demande</option>
+                </select>
+              </label>
+              <label class="treemap-checkbox"><input id="treemap-group" type="checkbox" checked> Regrouper par catégorie</label>
+            </div>
+            <p class="treemap-help" id="treemap-help">Survolez un rectangle pour afficher le détail. Cliquez sur un métier pour ouvrir sa catégorie. Au clavier : Tab pour parcourir, Entrée pour ouvrir, Échap pour revenir.</p>
+            <p class="treemap-path">
+              <button id="treemap-up" type="button" hidden>← Toutes les catégories</button>
+              <span class="treemap-current" aria-live="polite"></span>
+            </p>
+            <div class="treemap-canvas"><div class="treemap-tooltip" role="status" hidden></div></div>
+            <p class="treemap-message" role="status">Chargement des données…</p>
+            <div class="treemap-legend"></div>
+            <div class="treemap-summary" aria-live="polite">
+              <p class="treemap-total"></p>
+              <p class="treemap-top"></p>
+            </div>
+            <details class="treemap-details">
+              <summary>Voir les nombres par métier</summary>
+              <div class="treemap-table-wrapper"><table>
+                <thead><tr><th scope="col">Catégorie</th><th scope="col">Métier</th><th scope="col">Offres</th><th scope="col">Part</th><th scope="col">Salaire médian</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="container site-footer">
+      <p>Marché de l’emploi en IA · 2025–2026</p>
+      <a href="../../data/ai_jobs_market_2025_2026.csv" download>Télécharger les données CSV <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>
