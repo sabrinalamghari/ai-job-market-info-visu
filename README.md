@@ -2,7 +2,7 @@
 
 Page de visualisation du marché de l’emploi en intelligence artificielle en 2025–2026.
 
-La page d’accueil présente les quatre visualisations. Cliquer sur la première carte ouvre la page dédiée aux offres par ville et pays. Les trois autres visualisations restent à compléter.
+La page d’accueil présente les quatre visualisations. Cliquer sur la première carte ouvre la page dédiée aux offres par ville et pays, et la quatrième la treemap des métiers par catégorie. Les visualisations 2 et 3 restent à compléter.
 
 La première carte affiche en arrière-plan un aperçu SVG local de la carte mondiale et des offres du CSV, dans `visualizations/visualization-1/preview.svg`.
 
@@ -46,7 +46,11 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 │   │   └── visualization-1.js         # Dessin D3 et interactions
 │   ├── visualization-2.js             # Squelette
 │   ├── visualization-3.js             # Squelette
-│   └── visualization-4.js             # Squelette
+│   └── visualization-4/
+│       ├── visualization-4.html       # Page de la treemap des métiers
+│       ├── visualization-4.css        # Styles de la treemap
+│       ├── visualization-4.js         # Dessin D3 et interactions
+│       └── preview.svg                # Aperçu pour l’accueil
 ├── server.js                          # Serveur Express
 ├── package.json                       # Dépendances npm
 ├── package-lock.json                  # Versions exactes des dépendances
@@ -61,7 +65,7 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 
 L’accueil ne charge aucun script de visualisation. Chaque page charge seulement les ressources dont elle a besoin. Un lien de retour permet de rejoindre l’accueil.
 
-`app.js` charge le CSV et transmet les données préparées via `JobApp.subscribe()`. Les chemins de chargement du CSV et du fond de carte sont calculés depuis les scripts avec `new URL()`. Voir `docs/transformation-donnees.md` et `docs/visualisation-1.md` pour les explications.
+`app.js` charge le CSV et transmet les données préparées via `JobApp.subscribe()`. Les chemins de chargement du CSV et du fond de carte sont calculés depuis les scripts avec `new URL()`. Voir `docs/transformation-donnees.md`, `docs/visualisation-1.md` et `docs/visualisation-4.md` pour les explications.
 
 ## Dépendances
 
