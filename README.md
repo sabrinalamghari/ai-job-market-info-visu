@@ -55,11 +55,6 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 ├── package-lock.json                  # Versions exactes des dépendances
 └── README.md
 ```
-
-Les tests vérifient l’agrégation des profils, les filtres avant les calculs, les
-valeurs incomplètes, la combinaison des plages et la compatibilité du chargement
-commun avec la page de la carte.
-
 ## Visualisations
 
 - Carte mondiale : zoom, navigation par pays et continent, effectifs par ville,
@@ -88,7 +83,7 @@ documentées avec les métriques.
 - `visualizations/visualization-1/` : HTML, CSS, JS et aperçu de la carte.
 - `visualizations/visualization-2/` : HTML, CSS, JS et aperçu schématique des coordonnées parallèles.
 - `visualizations/visualization-3.js` : squelette à compléter.
-- `tests/parallel-data.test.js` : vérification du pipeline et de l’intégration.
+
 - `server.js` : serveur Express, ressources locales et route D3.
 
 La première carte affiche l’aperçu local `visualizations/visualization-1/preview.svg`.

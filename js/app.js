@@ -20,7 +20,6 @@ const JobApp = (() => {
     advancedFilters.append(advancedFields);
   }
   for (const [column, label] of Object.entries(filterLabels)) {
-    // Les pages comme la carte possèdent leurs propres contrôles.
     if (!filterControls) break;
     const field = document.createElement("label");
     field.textContent = label;
