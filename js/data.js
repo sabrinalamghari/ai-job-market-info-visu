@@ -3,6 +3,21 @@ const JobData = (() => {
   const numberColumns = ["years_of_experience", "annual_salary_usd", "salary_min_usd", "salary_max_usd", "ai_salary_premium_pct", "demand_score", "demand_growth_yoy_pct", "benefits_score_10", "posting_year", "posting_month"];
   const booleanColumns = ["is_senior", "is_remote_friendly", "is_llm_role"];
   const requiredColumns = [...textColumns, ...numberColumns, ...booleanColumns];
+
+  const jobFamilies = new Map([
+    ["AI Engineering", "IA, recherche et robotique"],
+    ["Research", "IA, recherche et robotique"],
+    ["Robotics", "IA, recherche et robotique"],
+    ["Data Science", "Data science et ingénierie"],
+    ["Data Engineering", "Data science et ingénierie"],
+    ["Architecture", "Plateformes et déploiement"],
+    ["ML Operations", "Plateformes et déploiement"],
+    ["Infrastructure", "Plateformes et déploiement"],
+    ["Product", "Produit et business"],
+    ["Business", "Produit et business"],
+    ["Security", "Sécurité et gouvernance"],
+    ["Governance", "Sécurité et gouvernance"],
+  ]);
   const experienceRanges = {
     "Entry (0-2 yrs)": [0, 2],
     "Mid (3-5 yrs)": [3, 5],
@@ -18,6 +33,7 @@ const JobData = (() => {
       job[column] = String(row[column] ?? "").trim();
       if (!job[column]) addIssue("missing_value", [column]);
     }
+    job.job_family = jobFamilies.get(job.job_category) ?? (job.job_category ? "Autres métiers" : "");
 
     for (const column of numberColumns) {
       const value = String(row[column] ?? "").trim();

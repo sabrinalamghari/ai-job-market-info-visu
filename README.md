@@ -1,10 +1,9 @@
 ﻿# AI Job Market Info Visu
 
 Page de visualisation du marché de l’emploi en intelligence artificielle en 2025–2026.
+La page d’accueil présente les quatre visualisations. La première ouvre la carte des offres par ville et pays, la deuxième les coordonnées parallèles des profils de métiers, et la quatrième la treemap des métiers par catégorie. La visualisation 3 reste à compléter.
 
-La page d’accueil présente les quatre visualisations. Cliquer sur la première carte ouvre la page dédiée aux offres par ville et pays, et la quatrième la treemap des métiers par catégorie. Les visualisations 2 et 3 restent à compléter.
-
-La première carte affiche en arrière-plan un aperçu SVG local de la carte mondiale et des offres du CSV, dans `visualizations/visualization-1/preview.svg`.
+Les cartes de la carte mondiale et de la treemap affichent leurs aperçus SVG locaux.
 
 ## Démarrage
 
@@ -56,12 +55,45 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 ├── package-lock.json                  # Versions exactes des dépendances
 └── README.md
 ```
+## Visualisations
+
+- Carte mondiale : zoom, navigation par pays et continent, effectifs par ville,
+  filtres métier, secteur, salaire minimum et télétravail.
+  [Documentation](docs/visualisation-1.md).
+- Coordonnées parallèles : six axes agrégés par métier, filtres famille de métiers,
+  expérience, pays et mode de travail, brushing combiné, tooltip et détails.
+  [Objectif, traitement des données, interprétation et limites](docs/visualisation-2.md).
+- Treemap : répartition des métiers par catégorie.
+  [Documentation](docs/visualisation-4.md).
+
+Chaque page charge les données source du projet et possède son état en mémoire.
+Les sélections ne persistent pas lors du passage à une autre page. Les profils des coordonnées
+parallèles sont recalculés après chaque changement de filtre ; la réinitialisation
+efface aussi les filtres de cette page. Le CSV présente des incohérences entre niveaux déclarés et années d’expérience,
+documentées avec les métriques.
+
+## Architecture
+
+- `index.html` : accueil sans scripts, liens vers les pages des visualisations.
+- `css/styles.css` et `css/favicon.svg` : styles communs et icône du site.
+- `data/ai_jobs_market_2025_2026.csv` : données source.
+- `data/world-countries.geojson` : fond de carte local.
+- `js/data.js` : nettoyage et alertes de qualité ; [explications](docs/transformation-donnees.md).
+- `js/app.js` : chargement unique des données source par page et API des filtres.
+- `visualizations/visualization-1/` : HTML, CSS, JS et aperçu de la carte.
+- `visualizations/visualization-2/` : HTML, CSS, JS et aperçu schématique des coordonnées parallèles.
+- `visualizations/visualization-3.js` : squelette à compléter.
+
+- `server.js` : serveur Express, ressources locales et route D3.
+
+La première carte affiche l’aperçu local `visualizations/visualization-1/preview.svg`.
 
 ## Ajouter une visualisation
 
-1. Créer une page HTML et une feuille CSS pour la visualisation dans son dossier sous `visualizations/`, comme pour la carte.
-2. Charger D3, `js/data.js`, `js/app.js`, puis le script de la visualisation avec `defer`, dans cet ordre. Inclure les éléments `csv-file` et `data-status` utilisés par `app.js`.
-3. Ajouter un lien depuis la carte correspondante dans `index.html`.
+1. Créer un dossier avec une page HTML, une feuille CSS et un script sous `visualizations/`.
+2. Charger D3, `js/data.js`, `js/app.js`, puis le composant avec `defer`.
+   Inclure l’élément `data-status` utilisé par `app.js`.
+3. Ajouter le lien sur l’accueil et un lien de retour sur la nouvelle page.
 
 L’accueil ne charge aucun script de visualisation. Chaque page charge seulement les ressources dont elle a besoin. Un lien de retour permet de rejoindre l’accueil.
 
