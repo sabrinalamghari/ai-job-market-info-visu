@@ -1,0 +1,103 @@
+.global-filters, .parallel-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-bottom: 16px; }
+.global-filters label { display: grid; gap: 4px; font-size: 13px; flex: 1 1 180px; }
+.global-filters select, .parallel-toolbar select, .parallel-toolbar button { max-width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); font: inherit; }
+.parallel-toolbar button { background: var(--accent); color: white; cursor: pointer; }
+select:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+#visualization-2 { display: block; position: relative; padding: 16px; border-style: solid; }
+.parallel-help { font-size: 12px; color: var(--muted); }
+.parallel-summary { font-size: 13px; }
+.parallel-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 16px 0; padding: 0; font-size: 12px; }
+.parallel-legend li { display: flex; align-items: center; gap: 7px; }
+.parallel-swatch { display: inline-block; width: 22px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+.parallel-family { border-left: 4px solid; padding-left: 10px; }
+.parallel-scroll { width: 100%; min-width: 0; overflow-x: auto; }
+.parallel-scroll svg { display: block; width: 100%; min-width: 940px; }
+.parallel-axis-label { fill: var(--text); font-size: 12px; font-weight: 600; }
+.parallel-axis-unit { fill: var(--muted); font-size: 11px; }
+.parallel-median { fill: none; stroke: #525c65; stroke-width: 2.5; stroke-dasharray: 3 5; }
+.parallel-quartiles { stroke: #525c65; stroke-width: 10; stroke-opacity: .18; }
+.parallel-markers text { font-size: 16px; font-weight: 700; stroke: white; stroke-width: 3px; paint-order: stroke fill; }
+.parallel-gems { padding: 14px; border: 1px solid var(--border); border-radius: 8px; }
+.parallel-gems p { margin: 8px 0; }
+.parallel-gems button { display: block; width: 100%; margin-top: 6px; }
+.parallel-brush .selection { fill: var(--accent); fill-opacity: .18; stroke: var(--accent); }
+.parallel-tooltip { position: absolute; z-index: 2; width: 280px; padding: 12px; background: var(--text); color: white; border-radius: 8px; white-space: pre-line; font-size: 12px; pointer-events: none; }
+.parallel-details { border-top: 1px solid var(--border); padding-top: 12px; }
+.parallel-details h4 { margin: 0; }
+.parallel-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; font-size: 13px; }
+.parallel-metrics dt { color: var(--muted); }
+.parallel-metrics dd { margin: 0; font-weight: 600; }
+.parallel-presets, .parallel-funnel { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.parallel-presets button, .parallel-funnel button { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; color: var(--text); background: white; cursor: pointer; font: inherit; font-size: 12px; }
+.parallel-presets button:hover, .parallel-insights button:hover { border-color: var(--accent); background: #f2f8f7; }
+.parallel-sweet { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.parallel-sweet label { display: flex; align-items: center; gap: 5px; }
+.parallel-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 16px 0; }
+.parallel-insights button { text-align: left; padding: 14px; background: #f7faf9; color: var(--text); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font: inherit; font-size: 12px; }
+.parallel-insights strong, .parallel-insights span { display: block; }
+.parallel-insights span { margin-top: 8px; color: var(--muted); }
+.parallel-insights p { grid-column: 1 / -1; margin: 0; font-size: 12px; }
+.parallel-funnel { align-items: center; font-size: 12px; }
+.parallel-metrics .parallel-comparison { font-weight: 400; color: var(--muted); margin-top: 5px; }
+.parallel-interpretation { padding: 12px; background: #f2f8f7; border-left: 3px solid var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+.parallel-options { margin: 10px 0; font-size: 12px; }
+.parallel-options > summary { cursor: pointer; color: var(--muted); padding: 6px 0; }
+.parallel-options[open] > summary { margin-bottom: 10px; }
+.global-filter-options { flex: 1 0 100%; }
+.global-filter-options[open] { display: flex; flex-wrap: wrap; gap: 12px; }
+.global-filter-options > summary { width: 100%; }
+.global-filter-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; flex: 1 0 100%; }
+.global-filter-fields label { min-width: 0; }
+.global-filter-fields select { width: 100%; min-width: 0; }
+.parallel-toolbar label { display: grid; gap: 5px; font-size: 13px; min-width: 0; }
+.parallel-toolbar select { width: 100%; }
+.parallel-exploration { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; }
+.parallel-exploration [hidden] { display: none; }
+.parallel-mode { padding: 8px 12px; background: #edf4f7; border-radius: 6px; font-size: 13px; }
+.parallel-axis-label { cursor: grab; touch-action: none; }
+.parallel-axis-label:active { cursor: grabbing; }
+.parallel-axis-label:focus-visible, .parallel-brush:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.parallel-legend button, .parallel-pair button, .parallel-analysis-results button, .parallel-details > button { padding: 5px 9px; border: 1px solid var(--border); border-radius: 5px; background: white; color: var(--text); cursor: pointer; font: inherit; }
+.parallel-legend button[aria-pressed="true"] { border-color: var(--accent); background: #e2f1eb; font-weight: 700; }
+.parallel-pair { margin: 12px 0; font-size: 13px; }
+.parallel-selected-profile { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 6px 0; }
+.parallel-profile-swatch { width: 28px; border-top: 4px solid #172b3a; flex-shrink: 0; }
+.parallel-profile-swatch-b { border-top: 4px dashed #9226ad; }
+.parallel-page .intro { padding-block: 16px; }
+.parallel-page .intro > p:first-child { margin: 0 0 8px; font-size: 12px; }
+.parallel-page h1 { font-size: clamp(24px, 3vw, 32px); }
+.parallel-page .intro-text { margin-top: 6px; font-size: 14px; }
+.parallel-page .section-heading { margin-bottom: 10px; }
+.parallel-page .visualization-card { padding: 12px; }
+.parallel-view-instructions { margin: 0; padding-left: 20px; }
+.parallel-view-instructions li + li { margin-top: 4px; }
+.parallel-filter-panel { margin-bottom: 10px; font-size: 13px; }
+.parallel-filter-panel > summary { cursor: pointer; color: var(--accent); padding: 4px; }
+.parallel-filter-panel[open] > summary { margin-bottom: 10px; }
+#visualization-2 { padding: 12px; }
+#visualization-2 > .parallel-toolbar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+#visualization-2 > .parallel-toolbar select { padding: 6px 8px; font-size: 13px; }
+.parallel-chart-help { margin: 4px 0; }
+.parallel-summary { margin: 4px 0; }
+.parallel-legend { gap: 4px 14px; margin: 8px 0; }
+.parallel-legend button { padding: 2px 0; border: 0; background: transparent; text-align: left; }
+.parallel-legend button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
+.parallel-actions { margin-top: 12px; }
+.parallel-actions button { padding: 6px 10px; background: white; color: var(--text); font-size: 12px; }
+#visualization-2 [hidden] { display: none; }
+@media (max-width: 640px) {
+  #visualization-2 > .parallel-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #visualization-2 > .parallel-toolbar > label:last-child { grid-column: 1 / -1; }
+  .parallel-toolbar > label { flex: 1 1 100%; }
+  .parallel-toolbar > button { flex: 1 1 160px; }
+}
+
+/* Interface épurée : graphique central, légende passive, détails à la demande. */
+.parallel-legend li { color: var(--muted); }
+.parallel-analysis-results:not([hidden]) { margin: 12px 0 18px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; }
+.parallel-analysis-results h4 { margin: 0 0 8px; }
+.parallel-analysis-results p { margin: 8px 0; }
+.parallel-filter-panel { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border); }
+.parallel-details:not([hidden]) { margin-top: 12px; }
+.parallel-exploration { margin-top: 12px; background: #fafcfc; }
