@@ -1,0 +1,51 @@
+.heatmap-page .intro { padding-block: 16px; }
+.heatmap-page .intro > p:first-child { margin: 0 0 8px; font-size: 12px; }
+.heatmap-page h1 { font-size: clamp(24px, 3vw, 32px); }
+.heatmap-page .intro-text { margin-top: 6px; font-size: 14px; }
+#visualization-3 { display: block; place-items: normal; position: relative; padding: 16px; border-style: solid; }
+.heatmap-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.heatmap-controls > .heatmap-options { margin: 0; }
+.heatmap-controls > .heatmap-options[open] { grid-column: 1 / -1; }
+.heatmap-filter-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-block: 12px; }
+.heatmap-filter-fields label { display: grid; gap: 4px; font-size: 13px; }
+.heatmap-filter-fields select { min-width: 0; width: 100%; }
+.heatmap-toolbar, .heatmap-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-block: 12px; }
+.heatmap-toolbar label { display: grid; gap: 4px; font-size: 13px; }
+.heatmap-page select, .heatmap-page button, .heatmap-search { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); font: inherit; font-size: 13px; max-width: 100%; }
+.heatmap-page button { cursor: pointer; }
+.heatmap-page button:hover { border-color: var(--accent); }
+.heatmap-page :is(button, input, select, summary):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.heatmap-help, .heatmap-summary, .heatmap-legend, .heatmap-options { font-size: 12px; }
+.heatmap-help { color: var(--muted); margin-block: 6px; }
+.heatmap-summary { margin-block: 6px; }
+.heatmap-options { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-block: 12px; }
+.heatmap-options > summary { cursor: pointer; }
+.heatmap-selection { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+.heatmap-selection fieldset { min-width: 0; margin: 0; border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+.heatmap-selection legend { font-weight: 600; }
+.heatmap-search { width: 100%; }
+.heatmap-checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 4px 12px; max-height: 220px; overflow-y: auto; margin-top: 10px; padding: 4px; }
+.heatmap-checklist label { display: flex; gap: 7px; align-items: baseline; font-size: 12px; }
+.heatmap-checklist input { accent-color: var(--accent); }
+.heatmap-scroll { width: 100%; overflow: auto; max-height: 740px; border: 1px solid var(--border); border-radius: 6px; background: white; }
+.heatmap-scroll svg { display: block; max-width: none; }
+.heatmap-axis { fill: var(--text); font-size: 11px; }
+.heatmap-cell { cursor: pointer; stroke: white; stroke-width: 1; }
+.heatmap-cell:hover, .heatmap-cell:focus, .heatmap-cell.is-selected { stroke: #111f2b; stroke-width: 2.5; outline: none; }
+.heatmap-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-block: 8px; }
+.heatmap-ramp { display: inline-block; width: 140px; height: 12px; vertical-align: middle; background: linear-gradient(to right, #f0f5f8, #185b83); border: 1px solid var(--border); }
+.heatmap-none { display: inline-block; width: 14px; height: 12px; vertical-align: middle; background: repeating-linear-gradient(135deg, #eef0f2 0 3px, #cad1d6 3px 4px); }
+.heatmap-details { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; }
+.heatmap-details h3 { margin-bottom: 6px; }
+.heatmap-details p { margin: 6px 0; }
+.heatmap-table-scroll { overflow: auto; max-height: 360px; }
+.heatmap-table-scroll table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.heatmap-table-scroll th, .heatmap-table-scroll td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+.heatmap-table-scroll thead { position: sticky; top: 0; background: white; }
+.heatmap-tooltip { position: fixed; z-index: 5; max-width: min(280px, calc(100vw - 24px)); padding: 10px 12px; background: var(--text); color: white; border-radius: 6px; box-shadow: 0 3px 12px #202e3826; font-size: 12px; white-space: pre-line; }
+.heatmap-empty { padding: 16px; font-size: 13px; }
+@media (max-width: 700px) {
+  .heatmap-selection { grid-template-columns: 1fr; }
+  .heatmap-controls, .heatmap-filter-fields { grid-template-columns: 1fr; }
+  #visualization-3 { padding: 10px; }
+}
