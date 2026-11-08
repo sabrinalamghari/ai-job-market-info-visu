@@ -12,8 +12,6 @@ Les liens vers les ressources communes utilisent `../../` depuis cette page. Le 
 
 - `jobs` sert à construire les choix des menus et les limites du curseur.
 - `filteredJobs` sert de point de départ au filtrage de la carte. Une sélection faite par une autre visualisation via `JobApp.setFilters()` est donc respectée.
-- Lors du chargement d’un nouveau CSV, les menus, le curseur et les filtres locaux sont réinitialisés.
-
 Le menu « Choisir un pays » contient uniquement les pays présents dans `jobs`, sans doublons. `Global` reste dans son encart, car il ne désigne pas un pays vers lequel zoomer.
 
 Les filtres ajoutés ici sont locaux à la carte. Les filtres communs de `app.js` restent indépendants. Le bouton « Effacer les filtres de la carte » efface seulement les filtres locaux.
@@ -75,6 +73,6 @@ Pour les continents, `continentBounds` fournit des rectangles de cadrage de leur
 
 Les offres dont `country === "Global"` n’ont pas de position géographique précise. Elles apparaissent dans un encart permanent et dans le tableau, avec les mêmes filtres que les autres offres. Elles sont incluses dans le total et restent visibles lorsque la carte est zoomée.
 
-Les autres offres sans coordonnées connues sont signalées et conservées dans le tableau. Si un nouveau CSV contient une nouvelle ville, il suffit d’ajouter sa clé et ses coordonnées à `cityCoordinates` pour la placer sur la carte. `has_geographic_location` vérifie la présence d’un nom de ville et de pays ; il ne remplace pas cette recherche de coordonnées.
+Les autres offres sans coordonnées connues sont signalées et conservées dans le tableau. Pour afficher une nouvelle ville ajoutée aux données source, il suffit d’ajouter sa clé et ses coordonnées à `cityCoordinates`. `has_geographic_location` vérifie la présence d’un nom de ville et de pays ; il ne remplace pas cette recherche de coordonnées.
 
 Si le fond de carte ne peut pas être chargé, un message l’indique et le tableau reste disponible.
