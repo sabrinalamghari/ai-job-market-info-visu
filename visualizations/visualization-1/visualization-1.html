@@ -37,6 +37,19 @@
         </div>
         <div class="visualization-card">
           <div class="visualization" id="visualization-1">
+            <div class="map-dataset-bar">
+              <div class="map-dataset-info">
+                <span class="map-dataset-tag">Jeu de données</span>
+                <span class="map-dataset-name" id="map-dataset-name">ai_jobs_market_2025_2026.csv (1 500 offres)</span>
+              </div>
+              <div class="map-dataset-actions">
+                <label class="map-dataset-file-label" for="map-csv-file" title="Charger un fichier CSV avec les colonnes compatibles">
+                  📁 Importer un CSV
+                  <input id="map-csv-file" type="file" accept=".csv,text/csv">
+                </label>
+                <button id="map-dataset-reset" type="button" title="Revenir au jeu de données initial">↺ Réinitialiser</button>
+              </div>
+            </div>
             <div class="map-filters">
               <label>Secteur <select id="map-industry"><option value="">Tous</option></select></label>
               <label>Catégorie <select id="map-job_category"><option value="">Toutes</option></select></label>
@@ -52,9 +65,52 @@
               <label>Continent <select id="map-continent"><option value="">Monde</option></select></label>
               <label>Pays <select id="map-country"><option value="">Choisir un pays</option></select></label>
               <button id="map-reset-zoom" type="button">Vue mondiale</button>
+              <button id="map-toggle-lens" type="button" aria-pressed="true" data-mode="auto" title="Mode de la loupe sémantique (Auto / Toujours / Désactivée) — Raccourci : L">🔍 Loupe : Auto (zones denses)</button>
             </div>
-            <p class="map-help" id="map-help">Cliquez sur un pays pour zoomer. Utilisez la molette pour zoomer et faites glisser pour déplacer la carte. Cliquez sur un point vert pour afficher la ville et son nombre d’offres.</p>
+            <p class="map-help" id="map-help">La loupe s’active automatiquement sur les zones denses (Europe, États-Unis) — Touche L pour changer de mode. <strong>Cliquez sur un pays ou une ville pour ouvrir sa fiche détaillée</strong> (salaires, télétravail, top métiers). Molette pour zoomer · <strong>Clic droit : retour instantané à la vue mondiale</strong>.</p>
             <div class="map-canvas"><div class="map-city-label" role="status" hidden></div></div>
+            <section class="map-selection-panel" id="map-selection-panel" aria-labelledby="map-selection-title" hidden>
+              <div class="map-selection-header">
+                <div class="map-selection-title-group">
+                  <span class="map-selection-badge" id="map-selection-type">Non localisées</span>
+                  <h3 class="map-selection-title" id="map-selection-title">Offres sans localisation géographique</h3>
+                  <p class="map-selection-note" id="map-selection-note">Ces offres sont ouvertes mondialement en télétravail sans ville ni pays associé. Cliquez sur une ville ou un pays de la carte pour afficher ses offres locales.</p>
+                </div>
+                <button class="map-selection-close" id="map-selection-close" type="button" aria-label="Revenir aux offres non localisées" style="display: none;">✕ Offres non localisées</button>
+              </div>
+              <div class="map-selection-kpis">
+                <div class="map-kpi-card">
+                  <span class="map-kpi-label">Offres actives</span>
+                  <span class="map-kpi-value" id="map-kpi-count">—</span>
+                  <span class="map-kpi-sub" id="map-kpi-share">—</span>
+                </div>
+                <div class="map-kpi-card">
+                  <span class="map-kpi-label">Salaire moyen</span>
+                  <span class="map-kpi-value" id="map-kpi-salary-avg">—</span>
+                  <span class="map-kpi-sub" id="map-kpi-salary-med">—</span>
+                </div>
+                <div class="map-kpi-card">
+                  <span class="map-kpi-label">Télétravail / Hybride</span>
+                  <span class="map-kpi-value" id="map-kpi-remote">—</span>
+                  <span class="map-kpi-sub" id="map-kpi-remote-count">—</span>
+                </div>
+                <div class="map-kpi-card">
+                  <span class="map-kpi-label">Profils Senior / Lead</span>
+                  <span class="map-kpi-value" id="map-kpi-senior">—</span>
+                  <span class="map-kpi-sub" id="map-kpi-experience">—</span>
+                </div>
+              </div>
+              <div class="map-selection-breakdown">
+                <div class="map-breakdown-card">
+                  <h4 class="map-breakdown-title">Top 4 des métiers les plus demandés</h4>
+                  <div class="map-breakdown-bars" id="map-jobs-bars"></div>
+                </div>
+                <div class="map-breakdown-card">
+                  <h4 class="map-breakdown-title">Répartition par niveau d’expérience</h4>
+                  <div class="map-breakdown-bars" id="map-exp-bars"></div>
+                </div>
+              </div>
+            </section>
             <p class="map-message" role="status">Chargement du fond de carte…</p>
             <p class="map-legend">La surface des cercles représente le nombre d’offres par ville. Les pays en vert contiennent des offres.</p>
             <div class="map-summary" aria-live="polite">

@@ -1,78 +1,120 @@
-# Comprendre la carte des offres
+# Visualisation 1
 
-La carte possède sa propre page dans `visualizations/visualization-1/`. Le fichier `visualization-1.html` contient la structure et les contrôles, `visualization-1.css` les styles de la carte et `visualization-1.js` le dessin D3 et les interactions. Les styles communs restent dans `css/styles.css`.
+## Objectif
 
-Pour l’afficher, lance `npm start`, puis ouvre http://localhost:3000 et clique sur « Les offres d’emploi dans le monde ». Un lien sur la page de la carte permet de revenir à l’accueil. Si les dépendances ne sont pas installées, lance d’abord `npm install`. D3 est chargé directement depuis `node_modules/d3/dist/d3.min.js`. Le projet fonctionne aussi avec `python -m http.server 8000` après installation des dépendances npm.
+Cette visualisation permet d’explorer la répartition géographique des offres
+d’emploi en intelligence artificielle. La carte aide à comparer les pays et les
+villes, à repérer les principaux pôles d’emploi et à consulter les offres qui ne
+sont pas associées à un lieu précis.
 
-Les liens vers les ressources communes utilisent `../../` depuis cette page. Le CSV et le fond de carte sont résolus avec `new URL(..., document.currentScript.src)` à partir du chemin de leur script, pour que leur chargement fonctionne indépendamment de la profondeur de la page HTML.
+La carte utilise un fond géographique et des cercles proportionnels au nombre
+d’offres par ville. Les filtres, le zoom et la sélection permettent ensuite
+d’examiner les résultats plus précisément.
 
-## 1. Recevoir les données préparées
+## Ce que la carte permet de voir
 
-`JobApp.subscribe()` reçoit les données déjà transformées par `data.js`. La carte ne relit pas le CSV et ne modifie pas les offres.
+- **Comparer les pays** grâce à la couleur des pays qui possèdent des offres.
+- **Comparer les villes** grâce à la taille des cercles.
+- **Explorer les zones denses** avec la loupe interactive et les noms des villes.
+- **Filtrer les offres** par secteur, catégorie, métier, salaire minimum et
+  télétravail.
+- **Consulter les détails** d’une ville ou d’un pays sélectionné.
+- **Afficher les offres globales** qui ne possèdent pas de localisation précise.
 
-- `jobs` sert à construire les choix des menus et les limites du curseur.
-- `filteredJobs` sert de point de départ au filtrage de la carte. Une sélection faite par une autre visualisation via `JobApp.setFilters()` est donc respectée.
-Le menu « Choisir un pays » contient uniquement les pays présents dans `jobs`, sans doublons. `Global` reste dans son encart, car il ne désigne pas un pays vers lequel zoomer.
+## Données et agrégation
 
-Les filtres ajoutés ici sont locaux à la carte. Les filtres communs de `app.js` restent indépendants. Le bouton « Effacer les filtres de la carte » efface seulement les filtres locaux.
+Chaque offre est associée à un pays et, lorsque c’est possible, à une ville.
+Les offres sont regroupées par ville pour calculer le nombre affiché dans
+chaque cercle. Les pays sont également regroupés afin de colorer la carte.
 
-## 2. Passer des coordonnées à la carte
+La taille des cercles utilise une échelle en racine carrée : leur surface reste
+proportionnelle au nombre d’offres. L’échelle est calculée sur l’ensemble du
+jeu de données afin de conserver une comparaison stable lorsque les filtres
+changent.
 
-Le CSV donne des noms de villes, sans latitude ni longitude. `cityCoordinates` contient donc les coordonnées approximatives des 19 villes du fichier, dans l’ordre `[longitude, latitude]`. La clé associe le pays et la ville, par exemple `France|Paris`, pour éviter de confondre des villes qui auraient le même nom.
+Les coordonnées des villes sont fournies par une table locale dans
+`visualizations/visualization-1/visualization-1.js`. Le fond de carte est le
+fichier `data/world-countries.geojson`. Les noms de pays sont rapprochés entre
+le CSV et le fond de carte lorsque leur écriture diffère.
 
-`d3.geoEquirectangular()` transforme ces coordonnées en positions `[x, y]` dans le SVG. Cette projection donne une carte rectangulaire. `fitExtent()` ajuste la taille de la planète à l’espace disponible. Le `viewBox` permet au navigateur de redimensionner le SVG selon la largeur de la page.
+## Préparation des données
 
-Le fichier local `data/world-countries.geojson` contient les contours des pays. Il vient du [jeu Natural Earth à l’échelle 1:110 millions](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_admin_0_countries.geojson), dans le [domaine public](https://www.naturalearthdata.com/about/terms-of-use/). Seul le nom de chaque pays est conservé parmi ses propriétés. `d3.geoPath(projection)` transforme chaque contour en tracé SVG.
+Le chemin des données est le suivant :
 
-`countryAliases` rapproche les noms du fond de carte et du CSV : `United States of America` devient `USA`, par exemple.
+1. `js/app.js` charge le CSV et transmet les données préparées à la carte.
+2. `js/data.js` vérifie les colonnes attendues, nettoie les valeurs et convertit
+   les nombres et les booléens.
+3. La carte construit les listes de filtres et calcule les effectifs visibles.
+4. Chaque changement de filtre relance le rendu de la carte et du panneau de
+   détails.
 
-Les très petits pays comme Singapour n’ont pas de contour dans ce fond à petite échelle. Leur cercle est présent et le menu des pays peut zoomer vers les coordonnées de leurs villes.
+Les données importées peuvent être remplacées depuis la barre de contrôle :
 
-## 3. Filtrer et compter dans render()
+- **Importer un CSV** charge un fichier compatible et recalcule la visualisation.
+- **Réinitialiser** restaure le fichier `ai_jobs_market_2025_2026.csv`.
 
-`render()` est appelée lorsque les données ou un contrôle changent. Elle conserve les offres qui respectent tous les critères choisis :
+Les contrôles de qualité signalent les valeurs manquantes ou invalides sans
+supprimer automatiquement les offres.
 
-- `annual_salary_usd` supérieur ou égal au salaire minimum ; à la position initiale, tous les salaires sont acceptés, y compris les valeurs manquantes ;
-- le secteur `industry`, la catégorie `job_category` et l’intitulé `job_title` sélectionnés ;
-- `is_remote_friendly === true` lorsque la case est cochée.
+## Utilisation
 
-Cette dernière condition utilise le booléen préparé par `data.js`. Elle inclut les modalités hybrides lorsque leur indicateur vaut `true`. Elle ne se limite pas aux offres `Fully Remote`.
+- Utilisez les listes et le curseur pour filtrer les offres.
+- Cochez le filtre de télétravail pour conserver les offres dont le mode est
+  hybride ou entièrement à distance.
+- Survolez une ville pour voir son nom et son nombre d’offres.
+- Cliquez sur une ville pour afficher sa fiche détaillée.
+- Cliquez sur un pays ou choisissez-le dans la liste pour zoomer dessus.
+- Utilisez la molette, le déplacement ou les gestes tactiles pour naviguer.
+- Cliquez sur le fond, appuyez sur Échap ou faites un clic droit pour revenir à
+  la vue mondiale.
 
-Le curseur règle un seuil de salaire annuel en dollars, par pas de 1 000 dollars. Sa mise à jour est manuelle, sans lecture automatique.
+La loupe s’active automatiquement au-dessus des zones où les villes sont
+proches. Le bouton ou la touche `L` permet de choisir entre les modes
+automatique, toujours actif et désactivé. Elle disparaît automatiquement
+lorsque le niveau de zoom rend les villes suffisamment lisibles.
 
-`d3.group()` rassemble les offres par ville. La longueur de chaque groupe donne le nombre d’offres. `d3.rollup()` compte aussi les offres par pays pour colorer les pays ayant au moins une offre.
+## Deux niveaux de visualisation
 
-`d3.scaleSqrt()` transforme les comptes en rayons : la surface d’un cercle dépend du carré de son rayon, donc utiliser une racine carrée rend sa surface proportionnelle au nombre d’offres. Un rayon minimum de 4 unités conserve la visibilité des petits comptes. L’échelle est calculée sur le CSV complet et reste fixe pendant le filtrage pour faciliter la comparaison.
+### Vue d’ensemble
 
-`.data(cities, city => city.key).join(...)` associe chaque ville à son élément SVG. D3 crée les nouveaux cercles, actualise les villes conservées et supprime celles qui n’ont plus d’offres.
+La carte mondiale montre les pays concernés et les volumes par ville. Les
+offres `Global`, sans pays ni ville de rattachement, sont présentées dans un
+encart séparé et restent incluses dans les totaux et les filtres.
 
-Un clic sur un point vert affiche une étiquette à côté avec la ville, le pays et le compte exact. Un deuxième clic sur ce point ou un clic sur le fond la ferme. Le clavier fonctionne aussi : Tab pour sélectionner un point, Entrée ou Espace pour ouvrir son étiquette, Échap pour la fermer. L’étiquette suit le point pendant le zoom et actualise son compte lors du filtrage ; elle disparaît si cette ville n’a plus d’offres.
+### Détails à la demande
 
-Les infobulles au survol restent disponibles. À partir d’un zoom ×3, les nombres apparaissent dans les cercles. Le tableau dépliable donne tous les comptes, même si des cercles se chevauchent.
+Un clic sur une ville ou un pays met l’élément en évidence et actualise le
+panneau de détails. Celui-ci présente notamment :
 
-## 4. Zoomer vers une bounding box
+- le nombre d’offres et sa part dans le marché filtré ;
+- les salaires et le taux de télétravail ;
+- l’ancienneté ou le niveau d’expérience ;
+- les métiers les plus représentés ;
+- la répartition des niveaux d’expérience.
 
-Une bounding box est le plus petit rectangle qui contient une forme. `zoomToCountry()` récupère ce rectangle avec `path.bounds()`. Pour un pays composé de plusieurs polygones, le zoom vise la plus grande masse terrestre : par exemple, les États-Unis continentaux.
+Les offres sans coordonnées connues restent visibles dans le tableau. Si une
+nouvelle ville doit être affichée sur la carte, ses coordonnées doivent être
+ajoutées à `cityCoordinates`.
 
-`zoomToBounds()` calcule le facteur de zoom à partir de la largeur et de la hauteur du rectangle. La valeur `0.85` laisse une marge autour de la forme. Le facteur est limité entre 1 et 20.
+## Limites des données
 
-```js
-d3.zoomIdentity
-  .translate(width / 2, height / 2)
-  .scale(scale)
-  .translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
+- Les offres `Global` ne peuvent pas être positionnées sur la carte.
+- Les villes absentes de la table de coordonnées ne sont pas représentées par
+  un cercle, mais restent conservées dans le tableau.
+- Le fond de carte à petite échelle ne représente pas toujours les très petits
+  pays ; leurs villes peuvent néanmoins être affichées.
+- Les salaires et les indicateurs dépendent des valeurs présentes dans les
+  offres et peuvent contenir des valeurs manquantes ou incohérentes.
+
+## Lancer la visualisation
+
+Depuis la racine du projet :
+
+```sh
+npm install
+npm start
 ```
 
-Ces opérations placent le centre du rectangle au centre du SVG et agrandissent la carte. `zoom.transform` applique le résultat. Le principe suit l’exemple [Zoom to bounding box de D3](https://observablehq.com/@d3/zoom-to-bounding-box).
-
-Pour les continents, `continentBounds` fournit des rectangles de cadrage de leur zone principale. Ces cadrages évitent les vues trop larges dues aux îles éloignées ou aux territoires traversant le bord du monde. Ils servent uniquement à la navigation et ne filtrent pas les offres.
-
-`d3.zoom()` gère aussi la molette, le déplacement et les gestes tactiles. `updateCityPositions()` applique une échelle inverse `1 / currentZoom.k` aux marqueurs pour conserver leur taille pendant le zoom : leur taille représente les offres, tandis que leur position suit la carte.
-
-## 5. Conserver les offres Global et les lieux inconnus
-
-Les offres dont `country === "Global"` n’ont pas de position géographique précise. Elles apparaissent dans un encart permanent et dans le tableau, avec les mêmes filtres que les autres offres. Elles sont incluses dans le total et restent visibles lorsque la carte est zoomée.
-
-Les autres offres sans coordonnées connues sont signalées et conservées dans le tableau. Pour afficher une nouvelle ville ajoutée aux données source, il suffit d’ajouter sa clé et ses coordonnées à `cityCoordinates`. `has_geographic_location` vérifie la présence d’un nom de ville et de pays ; il ne remplace pas cette recherche de coordonnées.
-
-Si le fond de carte ne peut pas être chargé, un message l’indique et le tableau reste disponible.
+Ouvrez ensuite http://localhost:3000 et sélectionnez « Les offres d’emploi dans
+le monde ». Un serveur statique peut aussi être lancé avec
+`python -m http.server 8000`.
