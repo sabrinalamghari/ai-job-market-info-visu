@@ -194,7 +194,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
   let tooltipTarget = null, tooltipTimer = null;
   let pointerPosition = null, dismissedPointer = null;
   const percent = value => value === null ? "Non disponible" : `${(value * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %`;
-  const description = value => `${value.job} · ${value.skill}\n${value.total ? `${value.count} / ${value.total} offres · ${percent(value.rate)}` : "Aucune offre de ce métier après filtrage"}`;
+  const description = value => `${value.job}, ${value.skill}\n${value.total ? `${value.count} / ${value.total} offres, ${percent(value.rate)}` : "Aucune offre de ce métier après filtrage"}`;
 
   function hideTooltip() {
     clearTimeout(tooltipTimer);
@@ -218,9 +218,24 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     hideTooltip();
     tooltipTarget = event.currentTarget;
     tooltip.textContent = description(value);
+    positionTooltip();
+  }
+
+  function positionTooltip() {
+    if (!tooltipTarget?.isConnected) { hideTooltip(); return; }
+    const box = tooltipTarget.getBoundingClientRect();
+    const viewport = scroll.getBoundingClientRect();
+    const visibleLeft = Math.max(0, viewport.left + scroll.clientLeft + Number(corner.attr("width")));
+    const visibleTop = Math.max(0, viewport.top + scroll.clientTop + Number(corner.attr("height")));
+    const visibleRight = Math.min(window.innerWidth, viewport.left + scroll.clientLeft + scroll.clientWidth);
+    const visibleBottom = Math.min(window.innerHeight, viewport.top + scroll.clientTop + scroll.clientHeight);
+    if (box.right <= visibleLeft || box.left >= visibleRight || box.bottom <= visibleTop || box.top >= visibleBottom) {
+      tooltip.hidden = true;
+      tooltipTarget.removeAttribute("aria-describedby");
+      return;
+    }
     tooltip.hidden = false;
     tooltipTarget.setAttribute("aria-describedby", tooltip.id);
-    const box = tooltipTarget.getBoundingClientRect();
     const gap = 10, width = tooltip.offsetWidth, height = tooltip.offsetHeight;
     let x = box.right + gap, y = box.top + (box.height - height) / 2;
     if (x + width > window.innerWidth - 8) x = box.left - width - gap;
@@ -278,7 +293,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
         create("li", "", `${skill} : ${count} / ${offers.length} (${percent(count / offers.length)})`, list);
       }
     }
-    button(details, "Fermer le détail", () => { chosen = null; render(); });
+    button(details, "Fermer le détail", () => {
+      const source = cellsLayer.selectAll("rect").filter(value => value.job === chosen.job && value.skill === chosen.skill).node();
+      chosen = null;
+      render();
+      focusCell(source);
+    });
   }
 
   function renderTable() {
@@ -300,12 +320,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     matrix = displayed.flatMap((profile, row) => skills.map((skill, column) => ({ ...HeatmapData.cell(profile, skill), row, column })));
     const available = displayed.filter(profile => profile.count).length;
     const shownOffers = displayed.reduce((sum, profile) => sum + profile.count, 0);
-    summary.textContent = `${displayed.length} métiers · ${skills.length} compétences · ${shownOffers.toLocaleString("fr-FR")} offres${available < displayed.length ? ` · ${displayed.length - available} métiers sans offre` : ""}`;
+    summary.textContent = `${displayed.length} métiers, ${skills.length} compétences, ${shownOffers.toLocaleString("fr-FR")} offres${available < displayed.length ? `, ${displayed.length - available} métiers sans offre` : ""}`;
     const activeFilters = Object.entries(filterSelects).filter(([column]) => state.filters[column]);
     filterSummary.textContent = `Filtrer les offres${activeFilters.length ? ` (${activeFilters.length})` : ""}`;
-    selectionSummary.textContent = `Métiers et compétences (${displayed.length} / ${allTitles.length} · ${skills.length} / ${allSkills.length})`;
+    selectionSummary.textContent = `Métiers et compétences (${displayed.length} / ${allTitles.length}, ${skills.length} / ${allSkills.length})`;
     for (const [column, control] of Object.entries(filterSelects)) control.value = state.filters[column];
-    if (activeFilters.length) summary.textContent += ` · ${activeFilters.map(([column]) => state.filters[column]).join(" · ")}`;
+    if (activeFilters.length) summary.textContent += `, ${activeFilters.map(([column]) => state.filters[column]).join(", ")}`;
     empty.hidden = Boolean(matrix.length && shownOffers);
     empty.textContent = !displayed.length ? "Sélectionnez au moins un métier dans les options de la vue." : !skills.length ? "Sélectionnez au moins une compétence, ou affichez les 20 plus fréquentes des métiers affichés." : "Aucune offre dans les métiers affichés avec ces filtres. Modifiez les filtres ou les métiers sélectionnés.";
     scroll.hidden = !matrix.length;
@@ -315,10 +335,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     const ramp = create("span", "", "0 ", legend);
     create("span", "heatmap-ramp", "", ramp).setAttribute("aria-hidden", "true");
     ramp.append(document.createTextNode(metric.value === "rate" ? " 100 %" : ` ${maximum} offres`));
-    const unavailable = create("span", "", "", legend);
-    create("span", "heatmap-none", "", unavailable).setAttribute("aria-hidden", "true");
-    unavailable.append(document.createTextNode(" Aucune offre du métier"));
-    create("span", "", metric.value === "rate" ? "Part des offres du métier" : "Nombre d’offres · échelle fixe", legend);
+    if (available < displayed.length) {
+      const unavailable = create("span", "", "", legend);
+      create("span", "heatmap-none", "", unavailable).setAttribute("aria-hidden", "true");
+      unavailable.append(document.createTextNode(" Métier sans offre après filtrage"));
+    }
+    create("span", "", metric.value === "rate" ? "Part des offres du métier" : "Nombre d’offres, échelle fixe", legend);
     const left = window.innerWidth < 700 ? 190 : 270, top = 145, size = 32;
     svg.attr("width", left + skills.length * size + 16).attr("height", top + displayed.length * size + 16);
     columnBackground.attr("x", left).attr("width", skills.length * size + 16).attr("height", top);
@@ -327,10 +349,17 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     rowLabels.selectAll("text").data(displayed, profile => profile.job).join("text")
       .attr("class", "heatmap-axis").attr("x", left - 10).attr("y", (_, index) => top + index * size + size / 2)
       .attr("text-anchor", "end").attr("dominant-baseline", "middle")
-      .text(profile => `${left < 270 && profile.job.length > 18 ? `${profile.job.slice(0, 16)}…` : profile.job} · ${profile.count} offres`);
+      .text(profile => `${left < 270 && profile.job.length > 18 ? `${profile.job.slice(0, 16)}…` : profile.job} (${profile.count} offres)`);
     columnLabels.selectAll("text").data(skills, skill => skill).join("text")
       .attr("class", "heatmap-axis").attr("transform", (_, index) => `translate(${left + index * size + size / 2},${top - 10}) rotate(-55)`)
       .attr("text-anchor", "start").text(skill => skill);
+    // Include the full painted extent of rotated labels, including when only
+    // one long skill is selected. Cell dimensions and positions stay unchanged.
+    const svgLeft = svg.node().getBoundingClientRect().left;
+    const labelRight = d3.max(columnLabels.selectAll("text").nodes(), node => node.getBoundingClientRect().right - svgLeft) ?? 0;
+    const svgWidth = Math.ceil(Math.max(left + skills.length * size, labelRight) + 16);
+    svg.attr("width", svgWidth);
+    columnBackground.attr("width", svgWidth - left);
     const cells = cellsLayer.selectAll("rect").data(matrix, value => JSON.stringify([value.job, value.skill])).join("rect")
       .attr("class", "heatmap-cell").classed("is-selected", value => chosen?.job === value.job && chosen?.skill === value.skill)
       .attr("x", value => left + value.column * size).attr("y", value => top + value.row * size)
@@ -357,15 +386,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
         event.preventDefault();
         const row = Math.max(0, Math.min(displayed.length - 1, value.row + movement[0]));
         const column = Math.max(0, Math.min(skills.length - 1, value.column + movement[1]));
-        cells.attr("tabindex", cell => cell.row === row && cell.column === column ? 0 : -1);
         const next = cells.nodes()[row * skills.length + column];
-        next.focus({ preventScroll: true });
-        const targetX = left + column * size, targetY = top + row * size;
-        if (targetX < scroll.scrollLeft + left) scroll.scrollLeft = targetX - left;
-        else if (targetX + size > scroll.scrollLeft + scroll.clientWidth) scroll.scrollLeft = targetX + size - scroll.clientWidth;
-        if (targetY < scroll.scrollTop + top) scroll.scrollTop = targetY - top;
-        else if (targetY + size > scroll.scrollTop + scroll.clientHeight) scroll.scrollTop = targetY + size - scroll.clientHeight;
-        pinLabels();
+        focusCell(next);
       });
     pinLabels(); renderDetail(); renderTable();
   }
@@ -375,10 +397,32 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     columnLabels.attr("transform", `translate(0,${scroll.scrollTop})`);
     corner.attr("transform", `translate(${scroll.scrollLeft},${scroll.scrollTop})`);
   }
+
+  function updateTooltipAfterScroll() {
+    if (tooltipTarget && document.activeElement === tooltipTarget) positionTooltip();
+    else hideTooltip();
+  }
+
+  function focusCell(cell) {
+    if (!cell?.isConnected) return;
+    cellsLayer.selectAll("rect").attr("tabindex", function () { return this === cell ? 0 : -1; });
+    cell.focus({ preventScroll: true });
+    const x = Number(cell.getAttribute("x")), y = Number(cell.getAttribute("y"));
+    const width = Number(cell.getAttribute("width")), height = Number(cell.getAttribute("height"));
+    const left = Number(corner.attr("width")), top = Number(corner.attr("height"));
+    if (x < scroll.scrollLeft + left) scroll.scrollLeft = x - left;
+    else if (x + width > scroll.scrollLeft + scroll.clientWidth) scroll.scrollLeft = x + width - scroll.clientWidth;
+    if (y < scroll.scrollTop + top) scroll.scrollTop = y - top;
+    else if (y + height > scroll.scrollTop + scroll.clientHeight) scroll.scrollTop = y + height - scroll.clientHeight;
+    pinLabels();
+    cell.scrollIntoView({ block: "nearest", inline: "nearest" });
+    updateTooltipAfterScroll();
+  }
+
   for (const control of [metric, rowOrder, columnOrder]) control.addEventListener("change", render);
-  scroll.addEventListener("scroll", () => { hideTooltip(); pinLabels(); });
+  scroll.addEventListener("scroll", () => { pinLabels(); updateTooltipAfterScroll(); });
   window.addEventListener("resize", render);
-  window.addEventListener("scroll", hideTooltip, { passive: true });
+  window.addEventListener("scroll", updateTooltipAfterScroll, { passive: true });
   JobApp.subscribe(nextState => {
     state = nextState;
     if (dataset !== state.jobs) {

@@ -282,7 +282,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     findSimilar.textContent = mode === "similar" ? "Masquer les métiers similaires" : "Voir 3 métiers similaires";
     const familyLabel = create("p", "parallel-family", `Famille : ${profile.family}`, details);
     familyLabel.style.borderLeftColor = familyColor(profile.family);
-    create("p", "", `${profile.count} offres après filtres · ${profile.category} · Expérience dominante : ${profile.experience}`, details);
+    create("p", "", `${profile.count} offres après filtres, ${profile.category}, Expérience dominante : ${profile.experience}`, details);
     if (profile.count < ParallelData.minimumCount || dimensions.some(axis => profile.validCounts[axis.key] < ParallelData.minimumCount)) {
       create("p", "parallel-help", "⚠ Échantillon limité : certaines statistiques reposent sur moins de 10 offres. Comparaison indicative, à interpréter avec prudence.", details);
     }
@@ -296,7 +296,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
       create("dt", "", axis.label, cell);
       create("dd", "", `${profile[axis.key] == null ? "Non disponible" : axis.format(profile[axis.key])} (n = ${profile.validCounts[axis.key]})`, cell);
       const comparison = ParallelData.comparison(profile, axis, stats, profiles);
-      create("dd", "parallel-comparison", `${comparison.difference} vs médiane · percentile ${Math.round(comparison.percentile)}`, cell);
+      create("dd", "parallel-comparison", `${comparison.difference} vs médiane, percentile ${Math.round(comparison.percentile)}`, cell);
     }
     const strong = dimensions.filter(axis => stats[axis.key].min < stats[axis.key].max && profile[axis.key] >= stats[axis.key].q3);
     const weak = dimensions.filter(axis => stats[axis.key].min < stats[axis.key].max && profile[axis.key] <= stats[axis.key].q1);
@@ -348,7 +348,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     for (const result of results) {
       analysisJobs.add(result.profile.job);
       const line = create("p", "", "", analysisResults);
-      const button = create("button", "", `${result.profile.job} · distance ${result.distance.toFixed(3)}`, line);
+      const button = create("button", "", `${result.profile.job}, distance ${result.distance.toFixed(3)}`, line);
       button.type = "button";
       button.addEventListener("click", () => {
         selected = result.profile.job;
@@ -386,7 +386,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     if (!panels) return;
     const descriptions = [...ranges].map(([key, range]) => { const axis = dimensions.find(axis => axis.key === key); return `${axis.label} : ${axis.format(range[0])} – ${axis.format(range[1])}`; });
     const smallSamples = profiles.filter(row => row.count < ParallelData.minimumCount || dimensions.some(axis => row.validCounts[axis.key] < ParallelData.minimumCount)).length;
-    summary.textContent = `${visible.length} / ${profiles.length} ${unit}${omitted ? ` · ${omitted} profils incomplets exclus` : ""}${descriptions.length ? ` · ${descriptions.join(" ; ")}` : ""}`;
+    summary.textContent = `${visible.length} / ${profiles.length} ${unit}${omitted ? `, ${omitted} profils incomplets exclus` : ""}${descriptions.length ? `, ${descriptions.join(" ; ")}` : ""}`;
     if (smallSamples) summary.textContent += ` ⚠ ${smallSamples} profil(s) avec moins de 10 observations sur au moins un indicateur : résultats indicatifs.`;
     summary.textContent += availabilityNote;
     if (!visible.length) summary.textContent += " Aucun profil affichable : élargissez les filtres ou effacez les plages. Certaines métriques peuvent être absentes.";
@@ -502,7 +502,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
       .attr("fill", "none").attr("d", profilePath)
       .on("mouseenter", (event, row) => {
         hovered = row.job;
-        tooltip.textContent = `${row.job} · ${row.count} offres\n${row.family}\n${dimensions.map(axis => `${axis.label} : ${axis.format(row[axis.key])}`).join("\n")}`;
+        tooltip.textContent = `${row.job}, ${row.count} offres\n${row.family}\n${dimensions.map(axis => `${axis.label} : ${axis.format(row[axis.key])}`).join("\n")}`;
         tooltip.hidden = false;
         updateSelection(false);
       })

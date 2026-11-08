@@ -14,11 +14,11 @@ Ce que la treemap fait ressortir sur le jeu fourni : les métiers ont des volume
 
 ## 2. Recevoir et filtrer les données
 
-`JobApp.subscribe()` reçoit les données déjà transformées par `data.js`. La treemap ne relit pas le CSV.
+`JobApp.subscribe()` reçoit les données déjà transformées par `data.js`, à partir du fichier local `data/ai_jobs_market_2025_2026.csv`. La treemap ne relit pas le CSV et ne propose pas de chargement d’un autre fichier depuis l’interface.
 
 - `jobs` sert à construire les choix des menus et les échelles de couleur.
 - `filteredJobs` sert de point de départ au filtrage local. Une sélection faite via `JobApp.setFilters()` est donc respectée.
-- Lors du chargement d’un nouveau CSV, les menus et les filtres locaux sont réinitialisés.
+- À l’initialisation des données de la page, les menus sont construits et les filtres locaux sont réinitialisés.
 
 Les filtres locaux portent sur `experience_level`, `country`, `remote_work` et `company_size`. Les modalités ordonnées (niveau d’expérience, mode de travail, taille d’entreprise) sont affichées dans leur ordre naturel et non alphabétique. `years_of_experience` n’est pas utilisé : dans ce CSV, sa médiane vaut 6 ans pour tous les niveaux (voir `docs/transformation-donnees.md`).
 
@@ -61,4 +61,4 @@ Le tableau dépliable donne, pour chaque métier visible, la catégorie, le nomb
 
 ## 6. L’aperçu de l’accueil
 
-`preview.svg` est une image statique de la treemap groupée, calculée avec le même découpage D3 à partir du CSV fourni. Elle ne change pas si un autre CSV est chargé dans la page.
+`preview.svg` est une image statique de la treemap groupée, calculée avec le même découpage D3 à partir du CSV fourni. Elle ne change pas avec les filtres de la page. Si le fichier source du projet est remplacé, cet aperçu doit être régénéré séparément.

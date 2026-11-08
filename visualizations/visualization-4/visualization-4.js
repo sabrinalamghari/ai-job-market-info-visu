@@ -124,7 +124,7 @@
     const lines = [
       [name, "treemap-tooltip-title"],
       [category],
-      [`${formatNumber.format(jobs.length)} offres · ${formatPercent.format(jobs.length / view.total)} des offres affichées`],
+      [`${formatNumber.format(jobs.length)} offres, ${formatPercent.format(jobs.length / view.total)} des offres affichées`],
     ];
     if (view.grouped && categoryTotal !== jobs.length) {
       lines.push([`${formatPercent.format(jobs.length / categoryTotal)} de la catégorie`]);
@@ -216,7 +216,7 @@
     headers.select("rect").transition(transition)
       .attr("width", node => node.x1 - node.x0).attr("height", headerHeight - 2);
     headers.select("text").text(node => fitText(
-      `${node.data.name} · ${formatNumber.format(node.value)}`, node.x1 - node.x0 - 12, "700 12px"));
+      `${node.data.name}, ${formatNumber.format(node.value)}`, node.x1 - node.x0 - 12, "700 12px"));
 
     const tiles = tileLayer.selectAll(".treemap-tile")
       .data(leaves, node => node.data.key)
@@ -256,7 +256,7 @@
       tile.select(".treemap-name").attr("fill", ink)
         .text(tileHeight >= 24 ? fitText(node.data.name, tileWidth, "600 12px") : "");
       tile.select(".treemap-count").attr("fill", ink)
-        .text(tileHeight >= 40 ? fitText(`${formatNumber.format(node.value)} offres · ${formatPercent.format(node.value / view.total)}`, tileWidth, "11px") : "");
+        .text(tileHeight >= 40 ? fitText(`${formatNumber.format(node.value)} offres, ${formatPercent.format(node.value / view.total)}`, tileWidth, "11px") : "");
     });
 
     categorySelect.property("value", category);

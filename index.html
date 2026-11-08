@@ -4,69 +4,65 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Exploration du marché de l’emploi en intelligence artificielle en 2025 et 2026.">
-    <title>Marché de l’emploi en IA · 2025–2026</title>
+    <title>L’emploi en intelligence artificielle, données 2025–2026</title>
     <link rel="icon" type="image/svg+xml" href="css/favicon.svg">
     <link rel="stylesheet" href="css/styles.css">
   </head>
-  <body>
+  <body class="home-page">
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="index.html" aria-label="Observatoire IA, accueil">
-          <span class="brand-mark" aria-hidden="true">ia.</span>
-          <span>Observatoire <strong>emploi & IA</strong></span>
+        <a class="brand" href="index.html" aria-label="Marché de l’emploi en IA, accueil">
+          <img class="brand-mark" src="css/favicon.svg" width="32" height="32" alt="">
+          <span><strong>Marché de l’emploi en IA</strong></span>
         </a>
       </div>
     </header>
     <main class="container" id="contenu">
       <section class="intro" aria-labelledby="page-title">
-        <p class="eyebrow">Exploration des données</p>
-        <h1 id="page-title">Le marché de l’emploi<br>en intelligence artificielle.</h1>
-        <p class="intro-text">Un espace pour explorer les données de 2025 et 2026 à travers quatre visualisations.</p>
+        <h1 id="page-title">L’emploi en intelligence artificielle</h1>
+        <div class="intro-note">
+          <p>Par lieu, par métier ou par compétence : quatre façons de parcourir le même fichier.</p>
+          <p class="dataset-note">1 500 offres, 25 métiers et 93 compétences.</p>
+        </div>
       </section>
       <section aria-labelledby="workspace-title">
-        <div class="section-heading">
-          <h2 id="workspace-title">Les visualisations</h2>
-        </div>
-        <div class="visualization-grid">
-          <a class="visualization-card visualization-link" href="visualizations/visualization-1/visualization-1.html" aria-labelledby="title-1">
-            <header class="card-header">
-              <span class="card-number" aria-hidden="true">01</span>
+        <h2 class="sr-only" id="workspace-title">Explorer le fichier</h2>
+        <div class="exploration-index">
+          <a class="exploration-entry" href="visualizations/visualization-1/visualization-1.html" aria-labelledby="title-1" aria-describedby="description-1">
+            <p class="entry-index"><span>01</span> Carte mondiale</p>
+            <header>
               <h3 id="title-1">Les offres d’emploi dans le monde</h3>
             </header>
-            <div class="visualization visualization-preview" aria-hidden="true"></div>
-            <p class="card-open">Explorer la carte <span aria-hidden="true">→</span></p>
+            <p class="entry-description" id="description-1">Répartition par ville et pays, selon le salaire, le métier et le télétravail.</p>
+            <div class="entry-preview"><img src="visualizations/visualization-1/preview.svg" alt="" loading="lazy" decoding="async"></div>
           </a>
-          <a class="visualization-card visualization-link" href="visualizations/visualization-2/visualization-2.html" aria-labelledby="title-2">
-            <header class="card-header">
-              <span class="card-number" aria-hidden="true">02</span>
+          <a class="exploration-entry" href="visualizations/visualization-2/visualization-2.html" aria-labelledby="title-2" aria-describedby="description-2">
+            <p class="entry-index"><span>02</span> Coordonnées parallèles</p>
+            <header>
               <h3 id="title-2">Comparer les profils des métiers IA</h3>
             </header>
-            <div class="visualization parallel-preview" aria-hidden="true"></div>
-            <p class="card-open">Comparer les métiers <span aria-hidden="true">→</span></p>
+            <p class="entry-description" id="description-2">Salaire, demande, croissance, accès débutant, télétravail et avantages : six indicateurs à mettre en regard.</p>
+            <div class="entry-preview"><img src="visualizations/visualization-2/preview.svg" alt="" loading="lazy" decoding="async"></div>
           </a>
-          <a class="visualization-card visualization-link" href="visualizations/visualization-3/visualization-3.html" aria-labelledby="title-3">
-            <header class="card-header">
-              <span class="card-number" aria-hidden="true">03</span>
+          <a class="exploration-entry" href="visualizations/visualization-3/visualization-3.html" aria-labelledby="title-3" aria-describedby="description-3">
+            <p class="entry-index"><span>03</span> Matrice des compétences</p>
+            <header>
               <h3 id="title-3">Les compétences selon les métiers</h3>
             </header>
-            <div class="visualization heatmap-preview" aria-hidden="true"></div>
-            <p class="card-open">Explorer les compétences <span aria-hidden="true">→</span></p>
+            <p class="entry-description" id="description-3">Fréquence des compétences mentionnées dans les offres de chaque métier.</p>
+            <div class="entry-preview"><img src="visualizations/visualization-3/preview.svg" alt="" loading="lazy" decoding="async"></div>
           </a>
-          <a class="visualization-card visualization-link" href="visualizations/visualization-4/visualization-4.html" aria-labelledby="title-4">
-            <header class="card-header">
-              <span class="card-number" aria-hidden="true">04</span>
+          <a class="exploration-entry" href="visualizations/visualization-4/visualization-4.html" aria-labelledby="title-4" aria-describedby="description-4">
+            <p class="entry-index"><span>04</span> Treemap</p>
+            <header>
               <h3 id="title-4">Les métiers de l’IA et de la data</h3>
             </header>
-            <div class="visualization visualization-preview visualization-preview-4" aria-hidden="true"></div>
-            <p class="card-open">Explorer la treemap <span aria-hidden="true">→</span></p>
+            <p class="entry-description" id="description-4">Poids des métiers dans le fichier et regroupement des offres par catégorie.</p>
+            <div class="entry-preview"><img src="visualizations/visualization-4/preview.svg" alt="" loading="lazy" decoding="async"></div>
           </a>
         </div>
       </section>
     </main>
-    <footer class="container site-footer">
-      <p>Marché de l’emploi en IA · 2025–2026</p>
-      <a href="data/ai_jobs_market_2025_2026.csv" download>Télécharger les données CSV <span aria-hidden="true">↗</span></a>
-    </footer>
   </body>
 </html>
