@@ -50,6 +50,8 @@ h3 { margin: 0; font-size: 16px; font-weight: 600; }
 
 .visualization-link .parallel-preview { border-style: solid; background: url("../visualizations/visualization-2/preview.svg") center / contain no-repeat #fafbfc; }
 
+.visualization-link .heatmap-preview { border-style: solid; background: url("../visualizations/visualization-3/preview.svg") center / contain no-repeat #fafbfc; }
+
 @media (max-width: 700px) {
   .container { width: calc(100% - 32px); }
   .header-inner { min-height: 76px; gap: 12px; flex-wrap: wrap; padding-block: 12px; }

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explorez les compétences mentionnées dans les offres selon les métiers, l’expérience, le pays et le secteur.">
+    <title>Compétences par métier · Observatoire emploi & IA</title>
+    <link rel="icon" type="image/svg+xml" href="../../css/favicon.svg">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="visualization-3.css">
+    <script src="../../node_modules/d3/dist/d3.min.js" defer></script>
+    <script src="../../js/data.js" defer></script>
+    <script src="../../js/app.js" defer></script>
+    <script src="visualization-3.js" defer></script>
+  </head>
+  <body class="heatmap-page">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="../../index.html" aria-label="Observatoire IA, accueil">
+          <span class="brand-mark" aria-hidden="true">ia.</span>
+          <span>Observatoire <strong>emploi & IA</strong></span>
+        </a>
+      </div>
+    </header>
+    <main class="container" id="contenu">
+      <section class="intro" aria-labelledby="page-title">
+        <p><a href="../../index.html">← Retour aux visualisations</a></p>
+        <h1 id="page-title">Les compétences selon les métiers</h1>
+        <p class="intro-text">Explorez les compétences partagées et les différences entre les profils des métiers IA.</p>
+      </section>
+      <section aria-labelledby="heatmap-title">
+        <div class="section-heading">
+          <h2 id="heatmap-title">Matrice métiers × compétences</h2>
+          <span class="status" id="data-status" role="status" aria-live="polite">Chargement des données…</span>
+        </div>
+        <div class="visualization-card">
+          <div class="visualization" id="visualization-3"><p class="placeholder">Chargement de la matrice…</p></div>
+        </div>
+      </section>
+    </main>
+    <footer class="container site-footer">
+      <p>Marché de l’emploi en IA · 2025–2026</p>
+      <a href="../../data/ai_jobs_market_2025_2026.csv" download>Télécharger les données CSV <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>

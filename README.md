@@ -1,9 +1,9 @@
 ﻿# AI Job Market Info Visu
 
 Page de visualisation du marché de l’emploi en intelligence artificielle en 2025–2026.
-La page d’accueil présente les quatre visualisations. La première ouvre la carte des offres par ville et pays, la deuxième les coordonnées parallèles des profils de métiers, et la quatrième la treemap des métiers par catégorie. La visualisation 3 reste à compléter.
+La page d’accueil présente les quatre visualisations : carte des offres par ville et pays, coordonnées parallèles des profils de métiers, heatmap des compétences par métier et treemap des métiers par catégorie.
 
-Les cartes de la carte mondiale et de la treemap affichent leurs aperçus SVG locaux.
+Les quatre cartes de l’accueil affichent leurs aperçus SVG locaux.
 
 ## Démarrage
 
@@ -43,8 +43,8 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 │   │   ├── visualization-1.html       # Page de la carte
 │   │   ├── visualization-1.css        # Styles de la carte
 │   │   └── visualization-1.js         # Dessin D3 et interactions
-│   ├── visualization-2.js             # Squelette
-│   ├── visualization-3.js             # Squelette
+│   ├── visualization-2/               # HTML, CSS, JS et aperçu des coordonnées parallèles
+│   ├── visualization-3/               # HTML, CSS, JS et aperçu de la heatmap
 │   └── visualization-4/
 │       ├── visualization-4.html       # Page de la treemap des métiers
 │       ├── visualization-4.css        # Styles de la treemap
@@ -63,6 +63,10 @@ Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localem
 - Coordonnées parallèles : six axes agrégés par métier, filtres famille de métiers,
   expérience, pays et mode de travail, brushing combiné, tooltip et détails.
   [Objectif, traitement des données, interprétation et limites](docs/visualisation-2.md).
+- Heatmap : proportions d’offres mentionnant chaque compétence par métier,
+  filtres expérience, pays et secteur, sélection des lignes et colonnes,
+  tris, détails des associations et tableau accessible.
+  [Mesures, navigation et architecture](docs/visualisation-3.md).
 - Treemap : répartition des métiers par catégorie.
   [Documentation](docs/visualisation-4.md).
 
@@ -82,7 +86,7 @@ documentées avec les métriques.
 - `js/app.js` : chargement unique des données source par page et API des filtres.
 - `visualizations/visualization-1/` : HTML, CSS, JS et aperçu de la carte.
 - `visualizations/visualization-2/` : HTML, CSS, JS et aperçu schématique des coordonnées parallèles.
-- `visualizations/visualization-3.js` : squelette à compléter.
+- `visualizations/visualization-3/` : HTML, CSS, JS et aperçu de la heatmap. Comme la visualisation 2, le script sépare les calculs purs du rendu D3.
 
 - `server.js` : serveur Express, ressources locales et route D3.
 
@@ -95,6 +99,8 @@ La première carte affiche l’aperçu local `visualizations/visualization-1/pre
    Inclure l’élément `data-status` utilisé par `app.js`.
 3. Ajouter le lien sur l’accueil et un lien de retour sur la nouvelle page.
 
+La heatmap construit ses contrôles localement et utilise `JobApp.setFilters()` pour filtrer les offres. Ses styles et ses interactions restent dans son dossier ; la visualisation 2 conserve ses contrôles et ses styles propres.
+
 L’accueil ne charge aucun script de visualisation. Chaque page charge seulement les ressources dont elle a besoin. Un lien de retour permet de rejoindre l’accueil.
 
 `app.js` charge le CSV et transmet les données préparées via `JobApp.subscribe()`. Les chemins de chargement du CSV et du fond de carte sont calculés depuis les scripts avec `new URL()`. Voir `docs/transformation-donnees.md`, `docs/visualisation-1.md` et `docs/visualisation-4.md` pour les explications.
@@ -102,3 +108,7 @@ L’accueil ne charge aucun script de visualisation. Chaque page charge seulemen
 ## Dépendances
 
 D3 et Express sont déclarés dans `package.json` et leurs versions exactes sont enregistrées dans `package-lock.json`. `npm install` les installe dans `node_modules`, qui reste exclu de Git. Le navigateur charge `node_modules/d3/dist/d3.min.js` ; Express sert uniquement ce fichier de dépendance via une route dédiée. La licence de D3 se trouve dans le paquet installé, à `node_modules/d3/LICENSE`. Aucun CDN ni outil de compilation n’est nécessaire.
+
+## Vérifications
+
+`npm test` lance les tests Node des agrégations de la heatmap, notamment sur le CSV réel. Sous PowerShell, utiliser `npm.cmd test` si la politique d’exécution bloque le script `npm.ps1`.
