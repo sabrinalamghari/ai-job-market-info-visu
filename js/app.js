@@ -82,21 +82,86 @@ const JobApp = (() => {
     updateFilteredJobs();
   }
 
+  let activeDatasetName = "ai_jobs_market_2025_2026.csv";
+
+  function updateDatasetNameDisplay() {
+    const displays = document.querySelectorAll("#map-dataset-name, [data-dataset-name]");
+    const count = state?.jobs?.length ?? 0;
+    const countStr = new Intl.NumberFormat("fr-FR").format(count);
+    const label = `${activeDatasetName} (${countStr} offre${count > 1 ? "s" : ""})`;
+    displays.forEach(el => {
+      el.textContent = label;
+      el.title = label;
+    });
+  }
+
+  async function loadFile(file) {
+    if (!file) return;
+    if (status) status.textContent = `Chargement de ${file.name}…`;
+    try {
+      const text = await file.text();
+      const rows = d3.csvParse(text);
+      const { jobs, quality } = JobData.prepareData(rows);
+      activeDatasetName = file.name;
+      state = { jobs, filteredJobs: jobs, quality, filters: { ...emptyFilters }, datasetName: activeDatasetName };
+      console.log(`Bilan de qualité (${file.name}) :`, quality);
+      updateFilteredJobs();
+      updateDatasetNameDisplay();
+    } catch (error) {
+      console.error("Impossible de charger le fichier CSV :", error);
+      if (status) status.textContent = `Erreur : ${error.message}${state ? " — données précédentes conservées." : ""}`;
+    }
+  }
+
+  async function reloadDefaultData() {
+    activeDatasetName = "ai_jobs_market_2025_2026.csv";
+    await loadData();
+    updateDatasetNameDisplay();
+  }
+
   async function loadData() {
-    status.textContent = "Chargement des données…";
+    if (status) status.textContent = "Chargement des données…";
     try {
       const rows = await d3.csv(csvUrl);
       const { jobs, quality } = JobData.prepareData(rows);
-      state = { jobs, filteredJobs: jobs, quality, filters: { ...emptyFilters } };
+      state = { jobs, filteredJobs: jobs, quality, filters: { ...emptyFilters }, datasetName: activeDatasetName };
       console.log("Bilan de qualité des données :", quality);
       updateFilteredJobs();
+      updateDatasetNameDisplay();
     } catch (error) {
       console.error("Impossible de charger les données :", error);
-      status.textContent = `Erreur : ${error.message}${state ? " — données précédentes conservées." : ""}`;
+      if (status) status.textContent = `Erreur : ${error.message}${state ? " — données précédentes conservées." : ""}`;
     }
+  }
+
+  function setupDatasetControls() {
+    document.querySelectorAll("input[type='file'][data-dataset-input], #map-csv-file").forEach(input => {
+      if (input.dataset.bound) return;
+      input.dataset.bound = "true";
+      input.addEventListener("change", event => {
+        const file = event.target.files?.[0];
+        if (file) loadFile(file);
+      });
+    });
+    document.querySelectorAll("[data-dataset-reset], #map-dataset-reset").forEach(btn => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => {
+        reloadDefaultData();
+        const fileInput = document.getElementById("map-csv-file");
+        if (fileInput) fileInput.value = "";
+      });
+    });
+    updateDatasetNameDisplay();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupDatasetControls);
+  } else {
+    setupDatasetControls();
   }
 
   loadData();
 
-  return { subscribe, setFilters, resetFilters };
+  return { subscribe, setFilters, resetFilters, loadFile, reloadDefaultData, getState: () => state };
 })();
