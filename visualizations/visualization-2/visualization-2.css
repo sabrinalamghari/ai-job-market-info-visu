@@ -3,14 +3,14 @@
 .global-filters select, .parallel-toolbar select, .parallel-toolbar button { max-width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); font: inherit; }
 .parallel-toolbar button { background: var(--accent); color: white; cursor: pointer; }
 select:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-#visualization-2 { display: block; position: relative; padding: 16px; border-style: solid; }
+#visualization-2 { display: block; position: relative; }
 .parallel-help { font-size: 12px; color: var(--muted); }
 .parallel-summary { font-size: 13px; }
 .parallel-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 16px 0; padding: 0; font-size: 12px; }
 .parallel-legend li { display: flex; align-items: center; gap: 7px; }
 .parallel-swatch { display: inline-block; width: 22px; height: 4px; border-radius: 2px; flex-shrink: 0; }
 .parallel-family { border-left: 4px solid; padding-left: 10px; }
-.parallel-scroll { width: 100%; min-width: 0; overflow-x: auto; }
+.parallel-scroll { width: 100%; min-width: 0; overflow-x: auto; border: 1px solid var(--border); background: white; }
 .parallel-scroll svg { display: block; width: 100%; min-width: 940px; }
 .parallel-axis-label { fill: var(--text); font-size: 12px; font-weight: 600; }
 .parallel-axis-unit { fill: var(--muted); font-size: 11px; }
@@ -52,7 +52,7 @@ button:disabled { opacity: .5; cursor: default; }
 .global-filter-fields select { width: 100%; min-width: 0; }
 .parallel-toolbar label { display: grid; gap: 5px; font-size: 13px; min-width: 0; }
 .parallel-toolbar select { width: 100%; }
-.parallel-exploration { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; }
+.parallel-exploration { padding: 0; }
 .parallel-exploration [hidden] { display: none; }
 .parallel-mode { padding: 8px 12px; background: #edf4f7; border-radius: 6px; font-size: 13px; }
 .parallel-axis-label { cursor: grab; touch-action: none; }
@@ -67,18 +67,14 @@ button:disabled { opacity: .5; cursor: default; }
 .parallel-page .intro { padding-block: 16px; }
 .parallel-page .intro > p:first-child { margin: 0 0 8px; font-size: 12px; }
 .parallel-page h1 { font-size: clamp(24px, 3vw, 32px); }
-.parallel-page .intro-text { margin-top: 6px; font-size: 14px; }
 .parallel-page .section-heading { margin-bottom: 10px; }
-.parallel-page .visualization-card { padding: 12px; }
 .parallel-view-instructions { margin: 0; padding-left: 20px; }
 .parallel-view-instructions li + li { margin-top: 4px; }
 .parallel-filter-panel { margin-bottom: 10px; font-size: 13px; }
 .parallel-filter-panel > summary { cursor: pointer; color: var(--accent); padding: 4px; }
 .parallel-filter-panel[open] > summary { margin-bottom: 10px; }
-#visualization-2 { padding: 12px; }
 #visualization-2 > .parallel-toolbar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
 #visualization-2 > .parallel-toolbar select { padding: 6px 8px; font-size: 13px; }
-.parallel-chart-help { margin: 4px 0; }
 .parallel-summary { margin: 4px 0; }
 .parallel-legend { gap: 4px 14px; margin: 8px 0; }
 .parallel-legend button { padding: 2px 0; border: 0; background: transparent; text-align: left; }
@@ -95,9 +91,9 @@ button:disabled { opacity: .5; cursor: default; }
 
 /* Interface épurée : graphique central, légende passive, détails à la demande. */
 .parallel-legend li { color: var(--muted); }
-.parallel-analysis-results:not([hidden]) { margin: 12px 0 18px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; }
+.parallel-analysis-results:not([hidden]) { margin: 16px 0; }
 .parallel-analysis-results h4 { margin: 0 0 8px; }
 .parallel-analysis-results p { margin: 8px 0; }
 .parallel-filter-panel { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border); }
 .parallel-details:not([hidden]) { margin-top: 12px; }
-.parallel-exploration { margin-top: 12px; background: #fafcfc; }
+.parallel-exploration { margin-top: 12px; }

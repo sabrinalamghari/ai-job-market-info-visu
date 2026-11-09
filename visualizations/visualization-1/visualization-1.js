@@ -113,7 +113,6 @@
 
   // Selection detail panel elements (Level 2: Details-on-Demand)
   const selectionPanel = root.select("#map-selection-panel");
-  const selectionType = root.select("#map-selection-type");
   const selectionTitle = root.select("#map-selection-title");
   const selectionNote = root.select("#map-selection-note");
   const selectionCloseBtn = root.select("#map-selection-close");
@@ -237,9 +236,9 @@
 
   // Mode management for the loupe: 'auto' (cluster only) | 'always' | 'off'
   const lensModeLabels = {
-    auto: "🔍 Loupe : Auto (zones denses)",
-    always: "🔍 Loupe : Toujours active",
-    off: "🔍 Loupe : Désactivée",
+    auto: "Loupe : auto",
+    always: "Loupe : active",
+    off: "Loupe : désactivée",
   };
 
   function setLensMode(mode) {
@@ -482,41 +481,28 @@
 
     const filtered = currentFilteredJobs || getFilteredJobs();
     let targetJobs = [];
-    let badgeText = "";
-    let badgeClass = "";
     let title = "";
     const isUnlocated = !selectedCityKey && !selectedCountryName;
-
-    selectionPanel.classed("is-selected", !isUnlocated);
 
     if (selectedCityKey) {
       const [country, city] = selectedCityKey.split("|");
       targetJobs = filtered.filter(j => j.country === country && j.city === city);
-      badgeText = "📍 Ville";
-      badgeClass = "badge-city";
       const cityName = cityNamesFr[selectedCityKey] ?? city;
       title = `${cityName}, ${country}`;
-      selectionCloseBtn.style("display", null).text("✕ Offres non localisées");
-      selectionNote.text("Cliquez sur [✕ Offres non localisées] ou sur le fond de carte pour revenir aux offres sans localisation.");
+      selectionCloseBtn.style("display", null).text("Offres non localisées");
+      selectionNote.text("");
     } else if (selectedCountryName) {
       targetJobs = filtered.filter(j => j.country === selectedCountryName);
-      badgeText = "🌍 Pays";
-      badgeClass = "badge-country";
       title = selectedCountryName;
-      selectionCloseBtn.style("display", null).text("✕ Offres non localisées");
-      selectionNote.text("Cliquez sur [✕ Offres non localisées] ou sur le fond de carte pour revenir aux offres sans localisation.");
+      selectionCloseBtn.style("display", null).text("Offres non localisées");
+      selectionNote.text("");
     } else {
       targetJobs = filtered.filter(j => j.country === "Global" || j.city === "Remote" || !j.has_geographic_location);
-      badgeText = "🌐 Non localisées";
-      badgeClass = "badge-unlocated";
-      title = "Offres sans localisation géographique (Global / Télétravail)";
+      title = "Offres non localisées";
       selectionCloseBtn.style("display", "none");
-      selectionNote.text("Ces offres sont ouvertes mondialement en télétravail sans ville ni pays associé (invisibles sur la carte). Cliquez sur une ville ou un pays pour afficher ses offres locales.");
+      selectionNote.text("Pays « Global », ville « Remote » ou localisation manquante.");
     }
 
-    selectionType
-      .text(badgeText)
-      .attr("class", `map-selection-badge ${badgeClass}`);
     selectionTitle.text(title);
 
     if (targetJobs.length === 0) {
@@ -556,9 +542,7 @@
     const remoteCount = targetJobs.filter(j => j.is_remote_friendly === true).length;
     const remotePct = targetJobs.length ? Math.round((remoteCount / targetJobs.length) * 100) : 0;
     kpiRemote.text(`${remotePct}%`);
-    kpiRemoteCount.text(isUnlocated
-      ? `${formatNumber.format(remoteCount)} offres 100% à distance`
-      : `${formatNumber.format(remoteCount)} offre${remoteCount > 1 ? "s" : ""} flexibles`);
+    kpiRemoteCount.text(`${formatNumber.format(remoteCount)} offre${remoteCount === 1 ? "" : "s"} hybrides ou à distance`);
 
     const seniorCount = targetJobs.filter(j => j.is_senior === true).length;
     const seniorPct = Math.round((seniorCount / targetJobs.length) * 100);
@@ -576,21 +560,19 @@
     })).sort((a, b) => b.count - a.count).slice(0, 4);
 
     const maxJobCount = jobCounts[0]?.count || 1;
-    jobsBarsContainer.html(jobCounts.map(item => {
+    jobsBarsContainer.selectAll("*").remove();
+    const jobBars = jobsBarsContainer.selectAll(".map-bar-item").data(jobCounts).join("div")
+      .attr("class", "map-bar-item");
+    jobBars.each(function (item) {
       const pct = Math.round((item.count / targetJobs.length) * 100);
       const widthPct = Math.max(8, Math.round((item.count / maxJobCount) * 100));
-      return `
-        <div class="map-bar-item">
-          <div class="map-bar-header">
-            <span class="map-bar-name" title="${item.title}">${item.title}</span>
-            <span class="map-bar-stat">${item.count} (${pct}%)</span>
-          </div>
-          <div class="map-bar-track">
-            <div class="map-bar-fill" style="width: ${widthPct}%"></div>
-          </div>
-        </div>
-      `;
-    }).join(""));
+      const bar = d3.select(this);
+      const header = bar.append("div").attr("class", "map-bar-header");
+      header.append("span").attr("class", "map-bar-name").attr("title", item.title).text(item.title);
+      header.append("span").attr("class", "map-bar-stat").text(`${item.count} (${pct}%)`);
+      bar.append("div").attr("class", "map-bar-track").append("div")
+        .attr("class", "map-bar-fill").style("width", `${widthPct}%`);
+    });
 
     // Experience distribution
     const expOrder = ["Entry (0-2 yrs)", "Mid (3-5 yrs)", "Senior (6-9 yrs)", "Lead (10+ yrs)"];
@@ -763,7 +745,7 @@
     updateCityPositions();
 
     root.select(".map-total").text(`${formatNumber.format(selectedJobs.length)} offres retenues, dont ${formatNumber.format(locatedJobs.length)} sur la carte (${cities.length} villes).`);
-    root.select(".map-global").text(`Global : ${formatNumber.format(globalJobs.length)} offres sans pays précis, accessibles mondialement.`);
+    root.select(".map-global").text(`Global : ${formatNumber.format(globalJobs.length)} offres sans pays précis.`);
     const unlocatedCount = localJobs.length - locatedJobs.length;
     root.select(".map-unlocated").text(unlocatedCount
       ? `${formatNumber.format(unlocatedCount)} autres offres sans coordonnées connues, conservées dans le tableau.` : "");

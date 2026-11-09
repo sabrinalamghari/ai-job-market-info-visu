@@ -49,4 +49,6 @@ Faites glisser sur un axe pour tracer une plage. Un double-clic sur la plage, ou
 
 La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-2/`. Le script sépare les calculs purs (`ParallelData`) du rendu DOM/D3. Il reçoit les offres via `JobApp.subscribe()` ; `app.js` construit les contrôles de filtres communs de cette page. D3 gère les échelles, axes, lignes, plages (`brushY`), glissements et jointures SVG.
 
-Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est un SVG statique schématique, indépendant des filtres.
+Le cadre est réservé au graphique défilant. Les détails, profils similaires et options suivent dans la page sans cartes imbriquées ; les avertissements sur les effectifs et les données restent affichés lorsqu’ils sont pertinents.
+
+Le fichier actif est choisi sur l’accueil et partagé par les quatre pages. Les seuils d’admissibilité restent appliqués aux fichiers importés : un petit fichier ou des mesures manquantes peuvent ne produire aucun profil traçable. Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est illustratif et ne change pas avec le fichier choisi.
