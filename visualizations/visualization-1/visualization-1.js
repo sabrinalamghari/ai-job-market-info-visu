@@ -3,7 +3,7 @@
   if (!container) return;
   const worldUrl = new URL("../../data/world-countries.geojson", document.currentScript.src);
 
-  // Coordinates are longitude then latitude
+  //coordinates are longitude then latitude
   const cityCoordinates = {
     "Australia|Sydney": [151.21, -33.87],
     "Canada|Toronto": [-79.38, 43.65],
@@ -48,20 +48,20 @@
     "UAE|Dubai": "Dubaï",
   };
 
-  // Radial label offsets for crowded regions in the semantic lens
+  //radial label offsets for crowded regions in the semantic lens
   const lensLabelOffsets = {
-    // Europe
+    //europe
     "UK|London": { dx: -6, dy: -1 },
     "France|Paris": { dx: -4, dy: 1 },
     "Netherlands|Amsterdam": { dx: 4, dy: -1 },
     "Switzerland|Zurich": { dx: 6, dy: 1 },
     "Germany|Berlin": { dx: 0, dy: -1 },
-    // US East & Great Lakes
+    //uS East & Great Lakes
     "USA|Boston": { dx: 6, dy: -1 },
     "USA|New York": { dx: -6, dy: 1 },
     "Canada|Toronto": { dx: -4, dy: -1 },
     "USA|Chicago": { dx: 0, dy: -1 },
-    // US West
+    //uS West
     "USA|San Francisco": { dx: -6, dy: -1 },
     "USA|Los Angeles": { dx: 6, dy: 1 },
     "USA|Seattle": { dx: 0, dy: -1 },
@@ -99,7 +99,7 @@
   let radius = d3.scaleSqrt();
   let selectedCityKey = null;
   let selectedCountryName = null;
-  let lensMode = "auto"; // "auto" | "always" | "off"
+  let lensMode = "auto"; //"auto" | "always" | "off"
   let mousePos = null;
 
   const root = d3.select(container);
@@ -111,7 +111,6 @@
   const lensToggleBtn = root.select("#map-toggle-lens");
   const cityLabel = root.select(".map-city-label");
 
-  // Selection detail panel elements (Level 2: Details-on-Demand)
   const selectionPanel = root.select("#map-selection-panel");
   const selectionTitle = root.select("#map-selection-title");
   const selectionNote = root.select("#map-selection-note");
@@ -136,7 +135,6 @@
     .attr("aria-label", "Carte mondiale des offres d’emploi en IA")
     .attr("aria-describedby", "map-help");
 
-  // Defs for filter and clipPath
   const defs = svg.append("defs");
   const filter = defs.append("filter")
     .attr("id", "lens-shadow")
@@ -158,14 +156,13 @@
     .attr("cy", 0)
     .attr("r", lensRadius);
 
-  // Main map layer
   const map = svg.append("g").attr("class", "map-root");
   map.append("path").datum({ type: "Sphere" }).attr("class", "map-ocean").attr("d", path);
   map.append("path").datum(d3.geoGraticule10()).attr("class", "map-graticule").attr("d", path);
   const countryLayer = map.append("g").attr("class", "map-countries");
   const cityLayer = map.append("g").attr("class", "map-cities");
 
-  // Semantic magnifying lens layer (Focus + Context)
+  //semantic magnifying lens layer (Focus + Context)
   const lens = svg.append("g").attr("class", "map-lens").attr("display", "none");
   const lensClipped = lens.append("g").attr("clip-path", "url(#lens-clip)");
   lensClipped.append("circle").attr("cx", 0).attr("cy", 0).attr("r", lensRadius).attr("class", "map-ocean");
@@ -174,7 +171,6 @@
   const lensCountryLayer = lensContent.append("g").attr("class", "map-lens-countries");
   const lensCityLayer = lensContent.append("g").attr("class", "map-lens-cities");
 
-  // Outer bezel ring
   lens.append("circle")
     .attr("cx", 0)
     .attr("cy", 0)
@@ -211,7 +207,7 @@
 
   selectionCloseBtn.on("click", clearSelection);
 
-  // Right-click to reset zoom instantly to world view
+  //right-click to reset zoom instantly to world view
   svg.on("contextmenu", event => {
     event.preventDefault();
     resetZoom();
@@ -225,7 +221,6 @@
     }
   });
 
-  // Pointer tracking for interactive loupe
   svg.on("pointerenter pointermove", event => {
     mousePos = d3.pointer(event, svg.node());
     if (lensMode !== "off" && currentZoom.k < 2.0) updateLensPosition(mousePos);
@@ -234,7 +229,6 @@
     lens.attr("display", "none");
   });
 
-  // Mode management for the loupe: 'auto' (cluster only) | 'always' | 'off'
   const lensModeLabels = {
     auto: "Loupe : auto",
     always: "Loupe : active",
@@ -262,7 +256,6 @@
 
   lensToggleBtn.on("click", cycleLensMode);
 
-  // Keyboard shortcut L to cycle lens mode
   window.addEventListener("keydown", event => {
     if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
     if (event.key === "l" || event.key === "L") {
@@ -311,7 +304,7 @@
     setLensMode("auto");
   }
 
-  // Detection: is mouse within proximity of a dense cluster of points?
+  //detection: is mouse within proximity of a dense cluster of points?
   function isNearCluster(pos) {
     if (!pos || !currentCities.length) return false;
     const [mx, my] = pos;
@@ -361,7 +354,7 @@
       return;
     }
 
-    // In auto mode, only activate if near a cluster of close points
+    //in auto mode, only activate if near a cluster of close points
     if (lensMode === "auto" && !isNearCluster(pos)) {
       lens.attr("display", "none");
       return;
@@ -393,11 +386,11 @@
         return `translate(${x},${y}) scale(${1 / currentZoom.k})`;
       });
 
-    // Display rules for numbers on base map:
-    // When zoomed (k >= 2.0), display all city numbers.
-    // At global scale (k < 2.0), display numbers for non-clustered cities;
-    // clustered European cities are kept visually uncluttered on the overview
-    // and inspected via the interactive semantic loupe.
+    //display rules for numbers on base map:
+    //when zoomed (k >= 2.0), display all city numbers.
+    //at global scale (k < 2.0), display numbers for non-clustered cities;
+    //clustered European cities are kept visually uncluttered on the overview
+    //and inspected via the interactive semantic loupe.
     cityLayer.selectAll(".map-city text").attr("display", function(city) {
       if (currentZoom.k >= 2.0) return null;
       if (city.key === selectedCityKey) return null;
@@ -554,7 +547,6 @@
       kpiExperience.text("Expérience non renseignée");
     }
 
-    // Top 4 Job Titles
     const jobCounts = Array.from(d3.rollup(targetJobs, v => v.length, j => j.job_title), ([title, count]) => ({
       title, count,
     })).sort((a, b) => b.count - a.count).slice(0, 4);
@@ -574,7 +566,6 @@
         .attr("class", "map-bar-fill").style("width", `${widthPct}%`);
     });
 
-    // Experience distribution
     const expOrder = ["Entry (0-2 yrs)", "Mid (3-5 yrs)", "Senior (6-9 yrs)", "Lead (10+ yrs)"];
     const expLabels = {
       "Entry (0-2 yrs)": "Débutant (0-2 ans)",
@@ -632,17 +623,14 @@
     currentCities = cities;
     const countryCounts = d3.rollup(localJobs, jobs => jobs.length, job => job.country);
 
-    // Update countries on base map
     countryLayer.selectAll("path")
       .classed("map-country-active", feature => (countryCounts.get(countryName(feature)) ?? 0) > 0)
       .select("title").text(feature => `${countryName(feature)} : ${formatNumber.format(countryCounts.get(countryName(feature)) ?? 0)} offres`);
 
-    // Update countries inside the magnifying lens
     lensCountryLayer.selectAll("path")
       .classed("map-country-active", feature => (countryCounts.get(countryName(feature)) ?? 0) > 0)
       .select("title").text(feature => `${countryName(feature)} : ${formatNumber.format(countryCounts.get(countryName(feature)) ?? 0)} offres`);
 
-    // Base map city markers
     const markers = cityLayer.selectAll(".map-city")
       .data(cities.sort((a, b) => b.count - a.count), city => city.key)
       .join(enter => {
@@ -663,9 +651,9 @@
         }
       });
 
-    // Adaptive styling for base map city markers:
-    // Large circles display numbers inside with high contrast;
-    // Small circles (<10px radius) place numbers cleanly above with a 3px white halo.
+    //adaptive styling for base map city markers:
+    //large circles display numbers inside with high contrast;
+    //small circles (<10px radius) place numbers cleanly above with a 3px white halo.
     markers.each(function(city) {
       const g = d3.select(this);
       const r = Math.max(5, radius(city.count));
@@ -688,7 +676,6 @@
       g.select("title").text(`${cityNamesFr[city.key] ?? city.city}, ${city.country} : ${formatNumber.format(city.count)} offres`);
     });
 
-    // Lens semantic markers
     const lensMarkers = lensCityLayer.selectAll(".map-lens-city")
       .data(cities.sort((a, b) => b.count - a.count), city => city.key)
       .join(enter => {

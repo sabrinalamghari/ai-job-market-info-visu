@@ -36,7 +36,7 @@
 #visualization-1 .map-city text.map-city-count-inside { fill: white; font-size: 11px; stroke: #123e35; stroke-width: 1.2px; paint-order: stroke fill; }
 #visualization-1 .map-city text.map-city-count-above { fill: #143e35; font-size: 10px; font-weight: 800; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; paint-order: stroke fill; }
 
-/* Loupe sémantique (Focus + Context) */
+/*loupe sémantique (Focus + Context) */
 #visualization-1 .map-lens { pointer-events: none; }
 #visualization-1 .map-lens-ring { fill: none; stroke: var(--accent); stroke-width: 2.5; filter: drop-shadow(0 4px 14px rgba(32, 46, 56, 0.35)); }
 #visualization-1 .map-lens-countries path { pointer-events: all; cursor: pointer; }
@@ -53,7 +53,6 @@
 #visualization-1 .map-lens-city-count.above { fill: #103830; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; paint-order: stroke fill; font-size: 10px; font-weight: 800; }
 #visualization-1 .map-city-label { position: absolute; z-index: 1; max-width: calc(100% - 16px); padding: 6px 10px; border: 1px solid var(--accent); border-radius: 6px; background: white; color: var(--text); font-size: 13px; pointer-events: none; box-shadow: 0 2px 8px #202e3826; }
 
-/* Les détails prolongent la carte, sans cartes imbriquées. */
 #visualization-1 .map-selection-panel {
   margin-top: 16px;
   padding-top: 16px;
