@@ -106,7 +106,7 @@ const JobDataset = (() => {
   }
 
   async function reset() {
-    // Check the default source before discarding the imported file.
+    //check the default source before discarding the imported file.
     const dataset = await loadDefault();
     await storedDataset("readwrite", store => store.delete("active"));
     return dataset;

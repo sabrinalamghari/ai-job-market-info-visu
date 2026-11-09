@@ -3,7 +3,7 @@
   if (!container) return;
 
   const filterColumns = ["experience_level", "country", "remote_work", "company_size"];
-  // Natural order of ordered values; other values are sorted alphabetically
+  //natural order of ordered values; other values are sorted alphabetically
   const valueOrder = {
     experience_level: ["Entry (0-2 yrs)", "Mid (3-5 yrs)", "Senior (6-9 yrs)", "Lead (10+ yrs)"],
     remote_work: ["On-site", "Hybrid", "Fully Remote"],
@@ -25,7 +25,6 @@
       format: value => `${value > 0 ? "+" : ""}${formatDecimal.format(value)} %`,
     },
   };
-  // Single-hue sequential ramp, light to dark
   const ramp = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"];
   const uniformFill = "#bce2d6";
   const missingFill = "#e1e5e8";
@@ -63,7 +62,7 @@
     return d3.median(jobs, job => job[column] ?? undefined);
   }
 
-  // Keep the label whole, shorten it with an ellipsis, or drop it when it cannot fit
+  //keep the label whole, shorten it with an ellipsis, or drop it when it cannot fit
   function fitText(text, maxWidth, font) {
     measureContext.font = `${font} ${getComputedStyle(container).fontFamily}`;
     if (measureContext.measureText(text).width <= maxWidth) return text;
@@ -316,7 +315,7 @@
       categorySelect.selectAll("option.filter-value").data(sortedValues("job_category"))
         .join("option").attr("class", "filter-value").attr("value", value => value).text(value => value);
       categorySelect.property("value", "");
-      // Scales use the full dataset and stay fixed while filtering, so colors remain comparable
+      //scales use the full dataset and stay fixed while filtering, so colors remain comparable
       for (const [mode, measure] of Object.entries(colorMeasures)) {
         const medians = Array.from(d3.rollup(state.jobs, jobs => median(jobs, measure.column),
           job => `${job.job_category}|${job.job_title}`).values()).filter(value => value !== undefined);
