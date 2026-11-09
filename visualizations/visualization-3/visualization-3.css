@@ -38,10 +38,6 @@
 .heatmap-details { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; }
 .heatmap-details h3 { margin-bottom: 6px; }
 .heatmap-details p { margin: 6px 0; }
-.heatmap-table-scroll { overflow: auto; max-height: 360px; }
-.heatmap-table-scroll table { border-collapse: collapse; width: 100%; font-size: 12px; }
-.heatmap-table-scroll th, .heatmap-table-scroll td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
-.heatmap-table-scroll thead { position: sticky; top: 0; background: white; }
 .heatmap-tooltip { position: fixed; z-index: 5; max-width: min(280px, calc(100vw - 24px)); padding: 10px 12px; background: var(--text); color: white; border-radius: 6px; box-shadow: 0 3px 12px #202e3826; font-size: 12px; white-space: pre-line; }
 .heatmap-empty { padding: 16px; font-size: 13px; }
 @media (max-width: 700px) {

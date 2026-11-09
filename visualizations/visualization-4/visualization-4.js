@@ -178,6 +178,7 @@
     svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
 
     const jobs = selectedJobs();
+    JobApp.updateOfferCount(jobs.length);
     const category = categorySelect.property("value");
     const grouped = groupInput.property("checked") && !category;
     const scope = category ? jobs.filter(job => job.job_category === category) : jobs;
