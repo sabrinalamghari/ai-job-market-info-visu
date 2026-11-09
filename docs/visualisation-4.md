@@ -1,64 +1,40 @@
-# Comprendre la treemap des métiers
+# Visualisation 4 : treemap des métiers
 
-La treemap possède sa propre page dans `visualizations/visualization-4/`. Le fichier `visualization-4.html` contient la structure et les contrôles, `visualization-4.css` les styles de la treemap et `visualization-4.js` le dessin D3 et les interactions. `preview.svg` est l’aperçu affiché sur la carte de l’accueil.
+## Objectif
 
-Pour l’afficher, lance `npm start`, puis ouvre http://localhost:3000 et clique sur « Les métiers de l’IA et de la data ». Si les dépendances ne sont pas installées, lance d’abord `npm install`.
+Comparer le poids des métiers dans les offres et explorer leur répartition par catégorie. La surface des rectangles représente le nombre d’offres ; les bandeaux identifient les catégories.
 
-## 1. Ce que montre la treemap
+## Données et mesures
 
-Une treemap découpe un rectangle en rectangles plus petits dont la **surface est proportionnelle à une mesure**. Ici, chaque rectangle est un métier (`job_title`) et sa surface correspond à son nombre d’offres. Les métiers sont regroupés par catégorie (`job_category`) : chaque catégorie forme un bloc avec un bandeau qui indique son nom et son total.
+Les offres sont regroupées par `job_category`, puis par `job_title`. Dans le fichier fourni, chaque métier appartient à une seule catégorie. Les volumes sont additionnés du métier vers sa catégorie, puis vers l’ensemble affiché.
 
-Dans le CSV, chaque métier appartient à une seule catégorie. La hiérarchie est donc simple : racine → catégorie → métier.
+Par défaut, tous les rectangles ont la même couleur verte. Deux mesures peuvent être ajoutées par la couleur : le salaire annuel médian (`annual_salary_usd`) ou la croissance médiane de la demande (`demand_growth_yoy_pct`). Les médianes portent sur les valeurs numériques disponibles dans les offres retenues. Une valeur indisponible apparaît en gris.
 
-Ce que la treemap fait ressortir sur le jeu fourni : les métiers ont des volumes proches (de 46 à 75 offres), mais la catégorie **AI Engineering** regroupe 12 métiers et près de la moitié des offres (736 sur 1 500). Huit catégories ne contiennent qu’un seul métier.
+Les échelles de couleur sont calculées sur le fichier complet et restent fixes pendant le filtrage. L’infobulle donne le nombre d’offres, leur part dans l’ensemble affiché et, lorsque pertinent, leur part dans la catégorie, ainsi que les deux médianes.
 
-## 2. Recevoir et filtrer les données
+## Filtres et sélections
 
-`JobApp.subscribe()` reçoit les données déjà transformées par `data.js`, à partir du fichier local `data/ai_jobs_market_2025_2026.csv`. La treemap ne relit pas le CSV et ne propose pas de chargement d’un autre fichier depuis l’interface.
+- Expérience déclarée, pays, mode de travail et taille d’entreprise filtrent les offres avant le regroupement et le calcul des médianes.
+- Le menu « Catégorie affichée » ou un clic sur un métier ou un bandeau ouvre cette catégorie. Les parts sont alors rapportées à cette catégorie.
+- « Regrouper par catégorie » modifie la disposition : décoché, les métiers sont présentés à plat, sans bandeaux. Les offres retenues restent les mêmes.
+- Le choix de couleur change la mesure colorée, jamais la mesure de surface.
 
-- `jobs` sert à construire les choix des menus et les échelles de couleur.
-- `filteredJobs` sert de point de départ au filtrage local. Une sélection faite via `JobApp.setFilters()` est donc respectée.
-- À l’initialisation des données de la page, les menus sont construits et les filtres locaux sont réinitialisés.
+## Navigation
 
-Les filtres locaux portent sur `experience_level`, `country`, `remote_work` et `company_size`. Les modalités ordonnées (niveau d’expérience, mode de travail, taille d’entreprise) sont affichées dans leur ordre naturel et non alphabétique. `years_of_experience` n’est pas utilisé : dans ce CSV, sa médiane vaut 6 ans pour tous les niveaux (voir `docs/transformation-donnees.md`).
+Le survol ou le focus clavier ouvre l’infobulle. Entrée/Espace permet d’ouvrir une catégorie depuis un métier ; « Toutes les catégories » ou Échap revient à l’ensemble. Un tableau dépliable donne les catégories, métiers, effectifs, parts et salaires médians visibles.
 
-## 3. Construire la hiérarchie et le découpage
+Les étiquettes sont raccourcies ou masquées lorsqu’elles ne tiennent pas dans un rectangle. Les informations complètes restent dans l’infobulle et le tableau. Le découpage s’adapte à la largeur du conteneur. Les transitions sont désactivées si le système demande de réduire les animations.
 
-`buildHierarchy()` regroupe les offres avec `d3.group(jobs, catégorie, métier)`, puis crée l’arbre avec `d3.hierarchy()`. `.sum()` additionne le nombre d’offres de chaque métier pour obtenir la valeur de chaque catégorie et de la racine. `.sort()` place les plus grands rectangles en premier.
+## Points de lecture
 
-`d3.treemap()` calcule ensuite la position `x0, y0, x1, y1` de chaque nœud :
+- Une grande catégorie peut regrouper plusieurs métiers : sa surface ne décrit pas la fréquence d’un métier unique.
+- `Hybrid` et `Fully Remote` sont deux choix distincts du filtre de mode de travail. `Global`, dans le filtre pays, ne signifie pas automatiquement télétravail intégral.
+- Les surfaces comparent des volumes ; les couleurs comparent des médianes. Les espaces et bandeaux réduisent la précision d’une comparaison visuelle des surfaces : les effectifs donnent les valeurs exactes.
+- La croissance provient du champ fourni dans chaque offre. Elle n’est pas recalculée à partir des dates du fichier ; la visualisation 2 en montre une moyenne, et celle-ci une médiane.
+- Le compteur en haut de page donne le nombre d’offres après les filtres locaux. Ouvrir une catégorie ne change pas ce compteur ; le résumé de la treemap indique le nombre d’offres de la catégorie affichée.
 
-- `d3.treemapSquarify` produit des rectangles proches du carré, plus faciles à comparer ;
-- `paddingTop(22)` réserve le bandeau de titre de chaque catégorie ;
-- `paddingInner` laisse 6 px entre les catégories et 2 px entre les métiers ;
-- `round(true)` arrondit les coordonnées au pixel pour des bords nets.
+## Implémentation
 
-Le SVG prend la largeur réelle de son conteneur, avec une hauteur égale à 60 % de cette largeur et 360 px au minimum. Un `ResizeObserver` recalcule le découpage quand la largeur change. Le texte garde donc sa taille sur mobile au lieu d’être rétréci.
+La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-4/`. Le script reçoit les offres via `JobApp.subscribe()` et applique ses filtres localement. D3 construit la hiérarchie avec `group` et `hierarchy`, calcule le découpage avec `treemap` et `treemapSquarify`, puis gère les jointures, transitions et échelles séquentielles. Un `ResizeObserver` déclenche le recalcul à la largeur disponible.
 
-## 4. Étiquettes et couleurs
-
-Une étiquette n’est affichée que si elle tient dans son rectangle. `fitText()` mesure le texte avec un canvas, le raccourcit avec « … » si nécessaire, et le retire s’il ne reste pas au moins quatre caractères. Les valeurs restent lisibles dans l’infobulle et dans le tableau.
-
-Par défaut, tous les rectangles ont la même couleur verte : la surface est la seule mesure codée. Douze catégories ne peuvent pas recevoir chacune une couleur distincte et lisible, surtout pour les personnes daltoniennes. Le regroupement et les bandeaux identifient donc les catégories.
-
-Le menu « Couleur des rectangles » ajoute une seconde mesure par métier :
-
-- **Salaire annuel médian** (`annual_salary_usd`) ;
-- **Croissance médiane de la demande** (`demand_growth_yoy_pct`).
-
-La couleur suit une rampe séquentielle d’une seule teinte, du bleu clair au bleu foncé (`d3.scaleSequential` et `d3.interpolateRgbBasis`). Le domaine de l’échelle est calculé sur le CSV complet et reste fixe pendant le filtrage, pour que les couleurs restent comparables d’une vue à l’autre. Un métier sans valeur apparaît en gris. Le texte passe en blanc sur les rectangles foncés, selon la luminance de la couleur de fond.
-
-## 5. Interactions
-
-- **Survol ou focus clavier** : une infobulle affiche le métier, la catégorie, le nombre d’offres, la part des offres affichées et de la catégorie, le salaire médian et la croissance médiane.
-- **Clic sur un métier ou un bandeau** : ouvre la catégorie. La treemap se redessine avec ses seuls métiers, et les parts sont alors calculées par rapport à cette catégorie. Le menu « Catégorie affichée » fait la même chose.
-- **Retour** : le bouton « ← Toutes les catégories » ou la touche Échap.
-- **Regrouper par catégorie** : décocher la case affiche tous les métiers à plat, sans bandeaux.
-
-Les rectangles sont associés à leur élément SVG avec la clé `catégorie|métier`. D3 déplace donc chaque rectangle vers sa nouvelle position au lieu de le recréer. Les transitions durent 450 ms et sont désactivées si le système demande de réduire les animations.
-
-Le tableau dépliable donne, pour chaque métier visible, la catégorie, le nombre d’offres, la part et le salaire médian. Il sert de version accessible de la treemap.
-
-## 6. L’aperçu de l’accueil
-
-`preview.svg` est une image statique de la treemap groupée, calculée avec le même découpage D3 à partir du CSV fourni. Elle ne change pas avec les filtres de la page. Si le fichier source du projet est remplacé, cet aperçu doit être régénéré séparément.
+Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est un SVG statique calculé à partir du fichier fourni ; il reste indépendant des filtres.

@@ -173,23 +173,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
   const corner = svg.append("rect").attr("fill", "white");
   const details = create("div", "heatmap-details");
   details.hidden = true;
-  const tableDetails = create("details", "heatmap-options");
-  create("summary", "", "Voir les valeurs de la matrice en tableau", tableDetails);
-  const tableScroll = create("div", "heatmap-table-scroll", "", tableDetails);
-  const table = create("table", "", "", tableScroll);
-  create("caption", "", "Valeurs des métiers et compétences affichés après filtrage des offres", table);
-  const head = create("tr", "", "", create("thead", "", "", table));
-  for (const label of ["Métier", "Compétence", "Offres avec compétence", "Offres du métier", "Part"]) {
-    create("th", "", label, head).scope = "col";
-  }
-  const tbody = create("tbody", "", "", table);
   const tooltip = create("div", "heatmap-tooltip");
   tooltip.id = "heatmap-tooltip";
   tooltip.setAttribute("role", "tooltip");
   tooltip.hidden = true;
-  container.replaceChildren(controls, summary, help, legend, empty, scroll, details, options, tableDetails, tooltip);
+  container.replaceChildren(controls, summary, help, legend, empty, scroll, details, options, tooltip);
   let state = null, dataset = null, profiles = [], allTitles = [], allSkills = [], initialSkills = [];
-  let selectedJobs = new Set(), selectedSkills = new Set(), chosen = null, matrix = [];
+  let selectedJobs = new Set(), selectedSkills = new Set(), chosen = null;
   let countMaximum = 1;
   let tooltipTarget = null, tooltipTimer = null;
   let pointerPosition = null, dismissedPointer = null;
@@ -301,23 +291,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     });
   }
 
-  function renderTable() {
-    tbody.replaceChildren();
-    if (!tableDetails.open) return;
-    for (const value of matrix) {
-      const row = create("tr", "", "", tbody);
-      for (const text of [value.job, value.skill, value.total ? value.count : "—", value.total, percent(value.rate)]) create("td", "", String(text), row);
-    }
-  }
-  tableDetails.addEventListener("toggle", renderTable);
-
   function render() {
     if (!state) return;
     hideTooltip();
     let displayed = profiles.filter(profile => selectedJobs.has(profile.job));
     const skills = HeatmapData.orderSkills([...selectedSkills], displayed, columnOrder.value);
     displayed = HeatmapData.orderProfiles(displayed, skills, rowOrder.value);
-    matrix = displayed.flatMap((profile, row) => skills.map((skill, column) => ({ ...HeatmapData.cell(profile, skill), row, column })));
+    const matrix = displayed.flatMap((profile, row) => skills.map((skill, column) => ({ ...HeatmapData.cell(profile, skill), row, column })));
     const available = displayed.filter(profile => profile.count).length;
     const shownOffers = displayed.reduce((sum, profile) => sum + profile.count, 0);
     summary.textContent = `${displayed.length} métiers, ${skills.length} compétences, ${shownOffers.toLocaleString("fr-FR")} offres${available < displayed.length ? `, ${displayed.length - available} métiers sans offre` : ""}`;
@@ -389,7 +369,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
         const next = cells.nodes()[row * skills.length + column];
         focusCell(next);
       });
-    pinLabels(); renderDetail(); renderTable();
+    pinLabels(); renderDetail();
   }
 
   function pinLabels() {

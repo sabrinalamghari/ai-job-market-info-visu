@@ -1,120 +1,38 @@
-# Visualisation 1
+# Visualisation 1 : carte des offres
 
 ## Objectif
 
-Cette visualisation permet d’explorer la répartition géographique des offres
-d’emploi en intelligence artificielle. La carte aide à comparer les pays et les
-villes, à repérer les principaux pôles d’emploi et à consulter les offres qui ne
-sont pas associées à un lieu précis.
+Explorer la répartition des offres par pays et ville, puis examiner les profils des lieux sélectionnés. Les offres sans localisation géographique restent consultables séparément.
 
-La carte utilise un fond géographique et des cercles proportionnels au nombre
-d’offres par ville. Les filtres, le zoom et la sélection permettent ensuite
-d’examiner les résultats plus précisément.
+## Données et mesures
 
-## Ce que la carte permet de voir
+Les offres sont regroupées par couple pays/ville. Les pays en vert possèdent des offres retenues ; leur couleur ne représente pas un volume. Le rayon des cercles suit une échelle en racine carrée, calculée sur le fichier complet. Un rayon minimal de 5 px assure leur visibilité : les plus petits cercles ne permettent donc pas une comparaison strictement proportionnelle des surfaces. Le nombre inscrit donne l’effectif exact.
 
-- **Comparer les pays** grâce à la couleur des pays qui possèdent des offres.
-- **Comparer les villes** grâce à la taille des cercles.
-- **Explorer les zones denses** avec la loupe interactive et les noms des villes.
-- **Filtrer les offres** par secteur, catégorie, métier, salaire minimum et
-  télétravail.
-- **Consulter les détails** d’une ville ou d’un pays sélectionné.
-- **Afficher les offres globales** qui ne possèdent pas de localisation précise.
+Le panneau de détails porte sur la ville, le pays ou les offres non localisées. Il présente les effectifs, leur part dans les offres filtrées, les salaires moyen et médian, les proportions `is_remote_friendly` et `is_senior`, les années d’expérience moyennes, les quatre métiers les plus représentés et la répartition des niveaux d’expérience. Les salaires non positifs sont exclus de ces statistiques de salaire.
 
-## Données et agrégation
+## Filtres et sélections
 
-Chaque offre est associée à un pays et, lorsque c’est possible, à une ville.
-Les offres sont regroupées par ville pour calculer le nombre affiché dans
-chaque cercle. Les pays sont également regroupés afin de colorer la carte.
+- Secteur, catégorie, intitulé, salaire annuel minimum et télétravail filtrent les offres avant le calcul des effectifs et des détails.
+- Le télétravail utilise `is_remote_friendly`, qui couvre aussi les offres hybrides dans ce fichier.
+- Les menus pays et continent servent à naviguer par zoom. Le choix d’un pays ouvre aussi ses détails ; il ne filtre pas l’ensemble des offres.
+- « Effacer les filtres de la carte » remet les filtres locaux à leur valeur initiale, sans changer le fichier source.
 
-La taille des cercles utilise une échelle en racine carrée : leur surface reste
-proportionnelle au nombre d’offres. L’échelle est calculée sur l’ensemble du
-jeu de données afin de conserver une comparaison stable lorsque les filtres
-changent.
+## Navigation
 
-Les coordonnées des villes sont fournies par une table locale dans
-`visualizations/visualization-1/visualization-1.js`. Le fond de carte est le
-fichier `data/world-countries.geojson`. Les noms de pays sont rapprochés entre
-le CSV et le fond de carte lorsque leur écriture diffère.
+Le survol affiche le nom et l’effectif d’une ville. Un clic sur une ville ou un pays ouvre ses détails. La molette, le déplacement et les gestes tactiles permettent de naviguer. La loupe possède trois modes, accessibles par le bouton ou la touche `L` : automatique sur les zones denses, toujours active ou désactivée. Elle disparaît à partir du niveau de zoom prévu pour lire les villes directement.
 
-## Préparation des données
+Un clic sur le fond ou Échap dans la carte efface la sélection, sans revenir au zoom mondial. Le clic droit ou « Vue mondiale » rétablit le cadrage mondial. Le tableau dépliable donne les effectifs par pays et ville, y compris ceux qui ne peuvent pas être positionnés. Les cercles des villes sont également accessibles au clavier.
 
-Le chemin des données est le suivant :
+## Points de lecture
 
-1. `js/app.js` charge le CSV et transmet les données préparées à la carte.
-2. `js/data.js` vérifie les colonnes attendues, nettoie les valeurs et convertit
-   les nombres et les booléens.
-3. La carte construit les listes de filtres et calcule les effectifs visibles.
-4. Chaque changement de filtre relance le rendu de la carte et du panneau de
-   détails.
+- `Global` décrit une localisation, pas un mode de travail. Le panneau non localisé rassemble les offres `Global`, les villes `Remote` et les offres sans localisation géographique exploitable.
+- Le libellé actuel « offres 100% à distance » du panneau non localisé est trompeur : son calcul utilise `is_remote_friendly` et inclut les hybrides. Le texte présentant toutes ces offres comme ouvertes mondialement en télétravail ne découle pas non plus de ce seul indicateur de localisation.
+- « Les plus demandés » dans ce panneau correspond au nombre d’offres, pas au champ `demand_score`.
+- Le compteur en haut de page donne le nombre d’offres après les filtres de la carte, y compris les offres non positionnées. Un zoom ou la sélection d’un pays ou d’une ville ne change pas ce compteur. Le résumé sous la carte distingue les offres positionnées et non positionnées.
+- Les villes absentes de la table locale de coordonnées restent dans les totaux et le tableau, sans cercle. Le fond géographique peut omettre de très petits pays.
 
-Les données importées peuvent être remplacées depuis la barre de contrôle :
+## Implémentation
 
-- **Importer un CSV** charge un fichier compatible et recalcule la visualisation.
-- **Réinitialiser** restaure le fichier `ai_jobs_market_2025_2026.csv`.
+La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-1/`. Le script reçoit les offres via `JobApp.subscribe()` et gère ses filtres localement. D3 assure la projection rectangulaire (`geoEquirectangular`), les tracés géographiques, le zoom, l’échelle des rayons, les regroupements et les jointures SVG. Les coordonnées des villes sont définies dans `cityCoordinates` ; le fond est `data/world-countries.geojson`.
 
-Les contrôles de qualité signalent les valeurs manquantes ou invalides sans
-supprimer automatiquement les offres.
-
-## Utilisation
-
-- Utilisez les listes et le curseur pour filtrer les offres.
-- Cochez le filtre de télétravail pour conserver les offres dont le mode est
-  hybride ou entièrement à distance.
-- Survolez une ville pour voir son nom et son nombre d’offres.
-- Cliquez sur une ville pour afficher sa fiche détaillée.
-- Cliquez sur un pays ou choisissez-le dans la liste pour zoomer dessus.
-- Utilisez la molette, le déplacement ou les gestes tactiles pour naviguer.
-- Cliquez sur le fond, appuyez sur Échap ou faites un clic droit pour revenir à
-  la vue mondiale.
-
-La loupe s’active automatiquement au-dessus des zones où les villes sont
-proches. Le bouton ou la touche `L` permet de choisir entre les modes
-automatique, toujours actif et désactivé. Elle disparaît automatiquement
-lorsque le niveau de zoom rend les villes suffisamment lisibles.
-
-## Deux niveaux de visualisation
-
-### Vue d’ensemble
-
-La carte mondiale montre les pays concernés et les volumes par ville. Les
-offres `Global`, sans pays ni ville de rattachement, sont présentées dans un
-encart séparé et restent incluses dans les totaux et les filtres.
-
-### Détails à la demande
-
-Un clic sur une ville ou un pays met l’élément en évidence et actualise le
-panneau de détails. Celui-ci présente notamment :
-
-- le nombre d’offres et sa part dans le marché filtré ;
-- les salaires et le taux de télétravail ;
-- l’ancienneté ou le niveau d’expérience ;
-- les métiers les plus représentés ;
-- la répartition des niveaux d’expérience.
-
-Les offres sans coordonnées connues restent visibles dans le tableau. Si une
-nouvelle ville doit être affichée sur la carte, ses coordonnées doivent être
-ajoutées à `cityCoordinates`.
-
-## Limites des données
-
-- Les offres `Global` ne peuvent pas être positionnées sur la carte.
-- Les villes absentes de la table de coordonnées ne sont pas représentées par
-  un cercle, mais restent conservées dans le tableau.
-- Le fond de carte à petite échelle ne représente pas toujours les très petits
-  pays ; leurs villes peuvent néanmoins être affichées.
-- Les salaires et les indicateurs dépendent des valeurs présentes dans les
-  offres et peuvent contenir des valeurs manquantes ou incohérentes.
-
-## Lancer la visualisation
-
-Depuis la racine du projet :
-
-```sh
-npm install
-npm start
-```
-
-Ouvrez ensuite http://localhost:3000 et sélectionnez « Les offres d’emploi dans
-le monde ». Un serveur statique peut aussi être lancé avec
-`python -m http.server 8000`.
+Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est un SVG statique, indépendant des interactions de la page.

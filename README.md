@@ -1,114 +1,75 @@
-﻿# AI Job Market Info Visu
+# AI Job Market Info Visu
 
-Page de visualisation du marché de l’emploi en intelligence artificielle en 2025–2026.
-La page d’accueil présente les quatre visualisations : carte des offres par ville et pays, coordonnées parallèles des profils de métiers, heatmap des compétences par métier et treemap des métiers par catégorie.
-
-Les quatre cartes de l’accueil affichent leurs aperçus SVG locaux.
+Site d’exploration du marché de l’emploi en intelligence artificielle à partir du fichier fourni pour 2025–2026 : 1 500 offres, 25 métiers et 93 compétences.
 
 ## Démarrage
 
-Depuis la racine du projet, lancer le serveur Express :
+Depuis la racine du projet :
 
 ```sh
 npm install
 npm start
 ```
 
-Ouvrir http://localhost:3000, puis cliquer sur « Les offres d’emploi dans le monde ».
+Ouvrir http://localhost:3000 et choisir une visualisation. Sous PowerShell, utiliser `npm.cmd install` et `npm.cmd start` si la politique d’exécution bloque `npm.ps1`.
 
-Après `npm install`, un serveur statique Python fonctionne également :
+Après installation des dépendances, un serveur statique fonctionne aussi :
 
 ```sh
 python -m http.server 8000
 ```
 
-Ouvrir http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localement. Le chargement des données nécessite HTTP : ouvrir directement le fichier HTML ne suffit pas.
+Ouvrir alors http://localhost:8000. Le CSV, D3 et le fond de carte sont servis localement. Les pages doivent être ouvertes via HTTP pour charger les données.
 
-## Arborescence
+## Visualisations
+
+| Page | Ce qu’elle permet d’explorer | Documentation |
+| --- | --- | --- |
+| Carte | Répartition géographique des offres et détails des pays et villes | [Visualisation 1](docs/visualisation-1.md) |
+| Coordonnées parallèles | Profils des métiers sur six indicateurs et comparaison entre métiers | [Visualisation 2](docs/visualisation-2.md) |
+| Heatmap | Compétences mentionnées selon les métiers et associations entre compétences | [Visualisation 3](docs/visualisation-3.md) |
+| Treemap | Poids des métiers et regroupement des offres par catégorie | [Visualisation 4](docs/visualisation-4.md) |
+
+Les quatre pages utilisent uniquement `data/ai_jobs_market_2025_2026.csv`. Chaque page conserve ses filtres et sélections dans son propre état en mémoire ; ils ne persistent pas lors de la navigation entre les pages. Les notices décrivent les mesures, le périmètre des filtres et les points de lecture. La [préparation commune des données](docs/transformation-donnees.md) décrit les conversions et contrôles, qui ne suppriment aucune offre.
+
+## Architecture
 
 ```text
 .
-├── index.html                         # Accueil et liens vers les visualisations
+├── index.html                         # Accueil et liens vers les quatre pages
 ├── css/
 │   ├── favicon.svg                    # Icône du site
 │   └── styles.css                     # Styles communs et responsive
 ├── data/
-│   ├── ai_jobs_market_2025_2026.csv    # Données source
+│   ├── ai_jobs_market_2025_2026.csv    # Source commune aux quatre visualisations
 │   └── world-countries.geojson        # Fond de carte local
 ├── js/
-│   ├── app.js                        # Chargement et filtres communs
-│   └── data.js                       # Préparation du CSV
+│   ├── app.js                         # Chargement, état et filtres communs
+│   └── data.js                        # Préparation et contrôles du CSV
 ├── visualizations/
-│   ├── visualization-1/
-│   │   ├── visualization-1.html       # Page de la carte
-│   │   ├── visualization-1.css        # Styles de la carte
-│   │   └── visualization-1.js         # Dessin D3 et interactions
-│   ├── visualization-2/               # HTML, CSS, JS et aperçu des coordonnées parallèles
-│   ├── visualization-3/               # HTML, CSS, JS et aperçu de la heatmap
-│   └── visualization-4/
-│       ├── visualization-4.html       # Page de la treemap des métiers
-│       ├── visualization-4.css        # Styles de la treemap
-│       ├── visualization-4.js         # Dessin D3 et interactions
-│       └── preview.svg                # Aperçu pour l’accueil
+│   ├── visualization-1/               # Carte
+│   ├── visualization-2/               # Coordonnées parallèles
+│   ├── visualization-3/               # Heatmap
+│   └── visualization-4/               # Treemap
+├── docs/                              # Préparation commune et quatre notices
 ├── server.js                          # Serveur Express
-├── package.json                       # Dépendances npm
-├── package-lock.json                  # Versions exactes des dépendances
-└── README.md
+├── package.json                       # Dépendances et commande de démarrage
+└── package-lock.json                  # Versions exactes des dépendances
 ```
-## Visualisations
 
-- Carte mondiale : zoom, navigation par pays et continent, effectifs par ville,
-  filtres métier, secteur, salaire minimum et télétravail.
-  [Documentation](docs/visualisation-1.md).
-- Coordonnées parallèles : six axes agrégés par métier, filtres famille de métiers,
-  expérience, pays et mode de travail, brushing combiné, tooltip et détails.
-  [Objectif, traitement des données, interprétation et limites](docs/visualisation-2.md).
-- Heatmap : proportions d’offres mentionnant chaque compétence par métier,
-  filtres expérience, pays et secteur, sélection des lignes et colonnes,
-  tris, détails des associations et tableau accessible.
-  [Mesures, navigation et architecture](docs/visualisation-3.md).
-- Treemap : répartition des métiers par catégorie.
-  [Documentation](docs/visualisation-4.md).
+Chaque dossier de visualisation contient une page HTML, une feuille CSS, un script et un aperçu SVG statique. L’accueil ne charge aucun script de visualisation. Chaque page reçoit les offres via `JobApp.subscribe()`, puis calcule et dessine sa représentation avec D3. Les visualisations 2 et 3 séparent leurs calculs purs du rendu ; les fonctions de la carte et de la treemap restent dans leurs composants locaux.
 
-Chaque page charge les données source du projet et possède son état en mémoire.
-Les sélections ne persistent pas lors du passage à une autre page. Les profils des coordonnées
-parallèles sont recalculés après chaque changement de filtre ; la réinitialisation
-efface aussi les filtres de cette page. Le CSV présente des incohérences entre niveaux déclarés et années d’expérience,
-documentées avec les métriques.
-
-## Architecture
-
-- `index.html` : accueil sans scripts, liens vers les pages des visualisations.
-- `css/styles.css` et `css/favicon.svg` : styles communs et icône du site.
-- `data/ai_jobs_market_2025_2026.csv` : données source.
-- `data/world-countries.geojson` : fond de carte local.
-- `js/data.js` : nettoyage et alertes de qualité ; [explications](docs/transformation-donnees.md).
-- `js/app.js` : chargement unique des données source par page et API des filtres.
-- `visualizations/visualization-1/` : HTML, CSS, JS et aperçu de la carte.
-- `visualizations/visualization-2/` : HTML, CSS, JS et aperçu schématique des coordonnées parallèles.
-- `visualizations/visualization-3/` : HTML, CSS, JS et aperçu de la heatmap. Comme la visualisation 2, le script sépare les calculs purs du rendu D3.
-
-- `server.js` : serveur Express, ressources locales et route D3.
-
-La première carte affiche l’aperçu local `visualizations/visualization-1/preview.svg`.
+Les aperçus de l’accueil ne changent pas avec les filtres. En cas de modification du fichier source, vérifier aussi les aperçus et les effectifs indiqués sur l’accueil.
 
 ## Ajouter une visualisation
 
-1. Créer un dossier avec une page HTML, une feuille CSS et un script sous `visualizations/`.
-2. Charger D3, `js/data.js`, `js/app.js`, puis le composant avec `defer`.
-   Inclure l’élément `data-status` utilisé par `app.js`.
-3. Ajouter le lien sur l’accueil et un lien de retour sur la nouvelle page.
+1. Créer un dossier sous `visualizations/` avec une page HTML, une feuille CSS, un script et un aperçu SVG.
+2. Charger avec `defer`, dans l’ordre, D3, `js/data.js`, `js/app.js`, puis le script de la visualisation. Inclure l’élément `data-status` utilisé par `app.js`.
+3. Recevoir les offres avec `JobApp.subscribe()` et placer les calculs, styles et interactions propres à la vue dans son dossier.
+4. Ajouter le lien et l’aperçu sur l’accueil, un lien de retour dans la page et une notice suivant la structure des quatre notices existantes.
 
-La heatmap construit ses contrôles localement et utilise `JobApp.setFilters()` pour filtrer les offres. Ses styles et ses interactions restent dans son dossier ; la visualisation 2 conserve ses contrôles et ses styles propres.
-
-L’accueil ne charge aucun script de visualisation. Chaque page charge seulement les ressources dont elle a besoin. Un lien de retour permet de rejoindre l’accueil.
-
-`app.js` charge le CSV et transmet les données préparées via `JobApp.subscribe()`. Les chemins de chargement du CSV et du fond de carte sont calculés depuis les scripts avec `new URL()`. Voir `docs/transformation-donnees.md`, `docs/visualisation-1.md` et `docs/visualisation-4.md` pour les explications.
+Les chemins du CSV et du fond de carte sont résolus depuis leurs scripts avec `new URL()`.
 
 ## Dépendances
 
-D3 et Express sont déclarés dans `package.json` et leurs versions exactes sont enregistrées dans `package-lock.json`. `npm install` les installe dans `node_modules`, qui reste exclu de Git. Le navigateur charge `node_modules/d3/dist/d3.min.js` ; Express sert uniquement ce fichier de dépendance via une route dédiée. La licence de D3 se trouve dans le paquet installé, à `node_modules/d3/LICENSE`. Aucun CDN ni outil de compilation n’est nécessaire.
-
-## Vérifications
-
-`npm test` lance les tests Node des agrégations de la heatmap, notamment sur le CSV réel. Sous PowerShell, utiliser `npm.cmd test` si la politique d’exécution bloque le script `npm.ps1`.
+D3 et Express sont déclarés dans `package.json`, avec leurs versions exactes dans `package-lock.json`. `npm install` les installe dans `node_modules`, exclu de Git. Le navigateur charge `node_modules/d3/dist/d3.min.js` ; Express expose ce fichier par une route dédiée. La licence de D3 est dans `node_modules/d3/LICENSE`. Aucun CDN ni outil de compilation n’est nécessaire.
