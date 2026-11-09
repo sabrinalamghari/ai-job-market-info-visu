@@ -26,55 +26,51 @@
     </header>
     <main class="container" id="contenu">
       <section class="intro" aria-labelledby="page-title">
-        <p class="back-link"><a href="../../index.html">Toutes les visualisations</a></p>
-        <h1 id="page-title">Les métiers de l’IA et de la data</h1>
-        <p class="intro-text">Une surface proportionnelle au nombre d’offres, avec les métiers regroupés par catégorie.</p>
-      </section>
-      <section aria-labelledby="treemap-title">
-        <div class="section-heading">
-          <h2 class="sr-only" id="treemap-title">Répartition des offres par métier</h2>
+        <p class="back-link"><a href="../../index.html"><span aria-hidden="true">← </span>Toutes les visualisations</a></p>
+        <div class="section-heading chart-title-row">
+          <h1 id="page-title">Répartition des métiers</h1>
           <span class="status" id="data-status" role="status" aria-live="polite">Chargement des données…</span>
         </div>
-        <div class="visualization-card">
-          <div class="visualization" id="visualization-4">
-            <div class="treemap-filters">
-              <label>Niveau d’expérience <select id="treemap-experience_level"><option value="">Tous</option></select></label>
-              <label>Pays <select id="treemap-country"><option value="">Tous</option></select></label>
-              <label>Mode de travail <select id="treemap-remote_work"><option value="">Tous</option></select></label>
-              <label>Taille d’entreprise <select id="treemap-company_size"><option value="">Toutes</option></select></label>
-              <button id="treemap-reset-filters" type="button">Effacer les filtres</button>
-            </div>
-            <div class="treemap-options">
-              <label>Catégorie affichée <select id="treemap-category"><option value="">Toutes les catégories</option></select></label>
-              <label>Couleur des rectangles
-                <select id="treemap-color">
-                  <option value="">Uniforme</option>
-                  <option value="salary">Salaire annuel médian</option>
-                  <option value="growth">Croissance médiane de la demande</option>
-                </select>
-              </label>
-              <label class="treemap-checkbox"><input id="treemap-group" type="checkbox" checked> Regrouper par catégorie</label>
-            </div>
-            <p class="treemap-help" id="treemap-help">Survolez un rectangle pour afficher le détail. Cliquez sur un métier pour ouvrir sa catégorie. Au clavier : Tab pour parcourir, Entrée pour ouvrir, Échap pour revenir.</p>
-            <p class="treemap-path">
-              <button id="treemap-up" type="button" hidden>← Toutes les catégories</button>
-              <span class="treemap-current" aria-live="polite"></span>
-            </p>
-            <div class="treemap-canvas"><div class="treemap-tooltip" role="status" hidden></div></div>
-            <p class="treemap-message" role="status">Chargement des données…</p>
-            <div class="treemap-legend"></div>
-            <div class="treemap-summary" aria-live="polite">
-              <p class="treemap-total"></p>
-              <p class="treemap-top"></p>
-            </div>
-            <details class="treemap-details">
-              <summary>Voir les nombres par métier</summary>
-              <div class="treemap-table-wrapper"><table>
-                <thead><tr><th scope="col">Catégorie</th><th scope="col">Métier</th><th scope="col">Offres</th><th scope="col">Part</th><th scope="col">Salaire médian</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-            </details>
+      </section>
+      <section aria-labelledby="treemap-title">
+        <h2 class="sr-only" id="treemap-title">Répartition des offres par métier</h2>
+        <div class="visualization" id="visualization-4">
+          <div class="treemap-filters">
+            <label>Niveau d’expérience <select id="treemap-experience_level"><option value="">Tous</option></select></label>
+            <label>Pays <select id="treemap-country"><option value="">Tous</option></select></label>
+            <label>Mode de travail <select id="treemap-remote_work"><option value="">Tous</option></select></label>
+            <label>Taille d’entreprise <select id="treemap-company_size"><option value="">Toutes</option></select></label>
+            <button id="treemap-reset-filters" type="button">Effacer les filtres</button>
           </div>
+          <div class="treemap-options">
+            <label>Catégorie affichée <select id="treemap-category"><option value="">Toutes les catégories</option></select></label>
+            <label>Couleur des rectangles
+              <select id="treemap-color">
+                <option value="">Uniforme</option>
+                <option value="salary">Salaire annuel médian</option>
+                <option value="growth">Croissance médiane de la demande</option>
+              </select>
+            </label>
+            <label class="treemap-checkbox"><input id="treemap-group" type="checkbox" checked> Regrouper par catégorie</label>
+          </div>
+          <p class="treemap-help" id="treemap-help">Un clic sur un métier ouvre sa catégorie.</p>
+          <p class="treemap-path" hidden>
+            <button id="treemap-up" type="button" hidden>← Toutes les catégories</button>
+          </p>
+          <div class="treemap-canvas"><div class="treemap-tooltip" role="status" hidden></div></div>
+          <p class="treemap-message" role="status">Chargement des données…</p>
+          <div class="treemap-legend"></div>
+          <div class="treemap-summary" aria-live="polite">
+            <p class="treemap-total"></p>
+            <p class="treemap-top"></p>
+          </div>
+          <details class="treemap-details">
+            <summary>Voir les nombres par métier</summary>
+            <div class="treemap-table-wrapper"><table>
+              <thead><tr><th scope="col">Catégorie</th><th scope="col">Métier</th><th scope="col">Offres</th><th scope="col">Part</th><th scope="col">Salaire médian</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </details>
         </div>
       </section>
     </main>

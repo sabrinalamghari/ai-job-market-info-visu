@@ -1,4 +1,4 @@
-#visualization-1 { display: block; place-items: normal; padding: 16px; border: 1px solid var(--border); }
+#visualization-1 { display: block; }
 #visualization-1 .map-filters,
 #visualization-1 .map-navigation { display: flex; align-items: end; flex-wrap: wrap; gap: 12px 16px; }
 #visualization-1 .map-navigation { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -53,79 +53,37 @@
 #visualization-1 .map-lens-city-count.above { fill: #103830; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; paint-order: stroke fill; font-size: 10px; font-weight: 800; }
 #visualization-1 .map-city-label { position: absolute; z-index: 1; max-width: calc(100% - 16px); padding: 6px 10px; border: 1px solid var(--accent); border-radius: 6px; background: white; color: var(--text); font-size: 13px; pointer-events: none; box-shadow: 0 2px 8px #202e3826; }
 
-/* Fiche détaillée interactive (Niveau 2 : Détails à la demande & Vue globale) */
+/* Les détails prolongent la carte, sans cartes imbriquées. */
 #visualization-1 .map-selection-panel {
   margin-top: 16px;
-  padding: 18px 20px;
-  background: #ffffff;
-  border: 1.5px solid #d5e2dc;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(33, 102, 89, 0.06);
-  animation: panelSlideIn 0.25s ease-out;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#visualization-1 .map-selection-panel.is-selected {
-  border-color: #edb032;
-  box-shadow: 0 4px 18px rgba(237, 176, 50, 0.16);
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
 }
 #visualization-1 .map-selection-panel[hidden] {
   display: none !important;
 }
-@keyframes panelSlideIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 #visualization-1 .map-selection-header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
 }
 #visualization-1 .map-selection-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-#visualization-1 .map-selection-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  background: #e8f3ef;
-  color: var(--accent);
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-#visualization-1 .map-selection-badge.badge-unlocated {
-  background: #f0f4f8;
-  color: #1e4f6d;
-  border: 1px solid #cbdbe6;
-}
-#visualization-1 .map-selection-badge.badge-country {
-  background: #e0f2fe;
-  color: #0369a1;
-}
-#visualization-1 .map-selection-badge.badge-city {
-  background: #fef3c7;
-  color: #92400e;
+  min-width: 0;
 }
 #visualization-1 .map-selection-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text);
 }
 #visualization-1 .map-selection-note {
-  flex-basis: 100%;
   margin: 4px 0 0 0;
   font-size: 12px;
   color: var(--muted);
   line-height: 1.4;
 }
+#visualization-1 .map-selection-note:empty { display: none; }
 #visualization-1 .map-selection-close {
   padding: 4px 10px;
   font-size: 12px;
@@ -134,38 +92,31 @@
   background: #f9fafb;
   color: var(--muted);
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 #visualization-1 .map-selection-close:hover {
-  background: #fee2e2;
-  border-color: #ef4444;
-  color: #b91c1c;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 #visualization-1 .map-selection-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 14px;
+  gap: 16px 24px;
+  margin-top: 16px;
 }
-#visualization-1 .map-kpi-card {
+#visualization-1 .map-stat {
   display: grid;
   gap: 3px;
-  padding: 10px 14px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
 }
+#visualization-1 .map-stat :is(dt, dd) { margin: 0; }
 #visualization-1 .map-kpi-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 400;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
 #visualization-1 .map-kpi-value {
   font-size: 20px;
-  font-weight: 800;
-  color: var(--accent);
+  font-weight: 600;
+  color: var(--text);
   line-height: 1.2;
 }
 #visualization-1 .map-kpi-sub {
@@ -175,14 +126,8 @@
 #visualization-1 .map-selection-breakdown {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-#visualization-1 .map-breakdown-card {
-  padding: 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  gap: 24px;
+  margin-top: 24px;
 }
 #visualization-1 .map-breakdown-title {
   margin: 0 0 10px 0;
@@ -237,9 +182,8 @@
 #visualization-1 .map-message { margin: 10px 0; font-size: 13px; color: var(--muted); }
 #visualization-1 .map-message:empty,
 #visualization-1 .map-unlocated:empty { display: none; }
-#visualization-1 .map-summary { display: grid; gap: 8px; font-size: 14px; }
+#visualization-1 .map-summary { display: grid; gap: 4px; font-size: 13px; }
 #visualization-1 .map-summary p { margin: 0; }
-#visualization-1 .map-global { padding: 12px; border-left: 3px solid var(--accent); background: #e8f3ef; border-radius: 4px; }
 #visualization-1 .map-details { margin-top: 16px; font-size: 13px; }
 #visualization-1 summary { cursor: pointer; color: var(--accent); font-weight: 600; }
 #visualization-1 .map-table-wrapper { max-height: 300px; overflow: auto; margin-top: 8px; }

@@ -176,7 +176,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     parent.append(element);
     return element;
   };
-  const chartHelp = create("p", "parallel-help parallel-chart-help", "Cliquez sur deux lignes pour comparer");
+  const chartHelp = create("p", "sr-only", "Sélectionnez deux métiers pour les comparer.");
   const filterPanel = document.querySelector(".parallel-filter-panel");
   const toolbar = create("div", "parallel-toolbar");
   const reset = create("button", "", "Réinitialiser la vue et les filtres", toolbar);
@@ -214,14 +214,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
   summary.setAttribute("role", "status");
   const funnel = create("div", "parallel-funnel");
   const instructions = create("ul", "parallel-help parallel-view-instructions", "", exploration);
-  for (const [label, text] of [
-    ["Références", "La ligne pointillée indique la médiane ; les segments, l’intervalle entre les quartiles."],
-    ["Effacer une plage", "Double-cliquez sur la plage."],
-    ["Réordonner les indicateurs", "Faites glisser un titre, ou sélectionnez-le puis utilisez les flèches gauche/droite du clavier. Cela change uniquement leur ordre sur le graphique."],
+  for (const text of [
+    "Pointillés : médiane. Segments : intervalle entre les quartiles.",
+    "Double-clic sur une plage pour l’effacer.",
+    "Déplacez un axe par son titre, à la souris ou avec les flèches gauche et droite.",
   ]) {
-    const item = create("li", "", "", instructions);
-    const term = create("strong", "", `${label} : `, item);
-    term.append(document.createTextNode(text));
+    create("li", "", text, instructions);
   }
   const scroll = create("div", "parallel-scroll");
   const svg = d3.select(scroll).append("svg").attr("viewBox", "0 0 1040 450").attr("role", "img").attr("aria-label", "Coordonnées parallèles des profils de métiers, six dimensions");
@@ -284,7 +282,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     familyLabel.style.borderLeftColor = familyColor(profile.family);
     create("p", "", `${profile.count} offres après filtres, ${profile.category}, Expérience dominante : ${profile.experience}`, details);
     if (profile.count < ParallelData.minimumCount || dimensions.some(axis => profile.validCounts[axis.key] < ParallelData.minimumCount)) {
-      create("p", "parallel-help", "⚠ Échantillon limité : certaines statistiques reposent sur moins de 10 offres. Comparaison indicative, à interpréter avec prudence.", details);
+      create("p", "parallel-help", "Petits effectifs : certaines mesures reposent sur moins de 10 offres.", details);
     }
     if (currentState?.filters?.experience_level) {
       create("p", "parallel-help", "La part Entry est calculée sur tous les niveaux d'expérience, en conservant les autres filtres actifs.", details);
@@ -302,7 +300,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     const weak = dimensions.filter(axis => stats[axis.key].min < stats[axis.key].max && profile[axis.key] <= stats[axis.key].q1);
     create("p", "", `Forces (≥ Q3) : ${strong.map(axis => axis.label).join(", ") || "aucune dimension dans le quart supérieur"}.`, details);
     create("p", "", `Compromis (≤ Q1) : ${weak.map(axis => axis.label).join(", ") || "aucune dimension dans le quart inférieur"}.`, details);
-    create("p", "parallel-help", `${profile.issueCount} offres comportent des alertes de qualité dans le nettoyage commun. Valeurs conservées ; les valeurs manquantes ou invalides pour une métrique sont exclues de son calcul. Les groupes peu fournis demandent de la prudence.`, details);
+    if (profile.issueCount) create("p", "parallel-help", `${profile.issueCount} offres avec des alertes de qualité. Les valeurs invalides sont exclues indicateur par indicateur.`, details);
   }
   function selectProfile(job) {
     if (compared.includes(job)) {
@@ -342,7 +340,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = ParallelDa
     const reference = profiles.find(row => row.job === selected);
     if (!reference) return;
     create("h4", "", `Métiers proches de ${reference.job}`, analysisResults);
-    create("p", "parallel-help", "Trois profils les plus proches parmi les métiers correspondant aux plages. Distance normalisée sur les axes variables : plus elle est faible, plus les profils se ressemblent.", analysisResults);
+    create("p", "parallel-help", "Distance normalisée sur les axes variables, parmi les profils dans les plages actives.", analysisResults);
     const results = ParallelData.similar(reference, visible, stats);
     if (!results.length) create("p", "", "Aucun autre métier comparable avec ces filtres.", analysisResults);
     for (const result of results) {

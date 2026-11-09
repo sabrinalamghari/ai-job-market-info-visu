@@ -37,4 +37,6 @@ Les étiquettes sont raccourcies ou masquées lorsqu’elles ne tiennent pas dan
 
 La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-4/`. Le script reçoit les offres via `JobApp.subscribe()` et applique ses filtres localement. D3 construit la hiérarchie avec `group` et `hierarchy`, calcule le découpage avec `treemap` et `treemapSquarify`, puis gère les jointures, transitions et échelles séquentielles. Un `ResizeObserver` déclenche le recalcul à la largeur disponible.
 
+Le cadre est réservé au graphique. Le menu indique la catégorie affichée ; le bouton de retour apparaît uniquement lorsqu’une catégorie est ouverte, sans répéter ce choix dans un second libellé.
+
 Le fichier actif est choisi sur l’accueil et partagé par les quatre pages. La hiérarchie, les menus et les domaines de couleur sont reconstruits à partir de cette source. Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est illustratif et ne change pas avec le fichier choisi.

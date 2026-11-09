@@ -110,13 +110,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     filterSelects[column] = control;
   }
   button(filters, "Effacer les filtres", () => JobApp.resetFilters());
-  const options = create("details", "heatmap-options");
-  create("summary", "", "Options de lecture et aide", options);
+  const options = create("details", "heatmap-view-options");
+  create("summary", "", "Affichage et tri", options);
   const toolbar = create("div", "heatmap-toolbar", "", options);
-  const metric = select(toolbar, "Couleur des cellules", [["rate", "Part des offres du métier (%)"], ["count", "Nombre d’offres"]]);
-  const rowOrder = select(toolbar, "Ordre des métiers", [["alpha", "Alphabétique"], ["count", "Nombre d’offres"], ["similarity", "Similarité des profils"]]);
-  const columnOrder = select(toolbar, "Ordre des compétences", [["count", "Fréquence dans les métiers affichés"], ["alpha", "Alphabétique"], ["similarity", "Similarité des profils"]]);
-  const help = create("p", "heatmap-help", "Survolez une cellule pour voir ses valeurs, cliquez pour conserver le détail.");
+  const metric = select(toolbar, "Afficher", [["rate", "Part des offres du métier (%)"], ["count", "Nombre d’offres"]]);
+  const rowOrder = select(toolbar, "Trier les métiers", [["alpha", "Alphabétique"], ["count", "Nombre d’offres"], ["similarity", "Similarité des profils"]]);
+  const columnOrder = select(toolbar, "Trier les compétences", [["count", "Fréquence dans les métiers affichés"], ["alpha", "Alphabétique"], ["similarity", "Similarité des profils"]]);
+  const help = create("p", "sr-only", "Survolez une cellule pour voir ses valeurs, cliquez pour conserver le détail.");
   help.id = "heatmap-help";
   const selectionPanel = create("details", "heatmap-options heatmap-selection-panel", "", controls);
   const selectionSummary = create("summary", "", "Choisir les métiers et compétences", selectionPanel);
@@ -146,8 +146,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     selectedSkills = new Set(HeatmapData.topSkills(profiles.filter(profile => selectedJobs.has(profile.job))));
     renderPickers(); render();
   });
-  const actions = create("div", "heatmap-actions", "", options);
-  button(actions, "Réinitialiser la vue et les filtres", () => {
+  const resetView = button(toolbar, "Réinitialiser la vue et les filtres", () => {
     selectedJobs = new Set(allTitles);
     selectedSkills = new Set(initialSkills);
     metric.value = "rate"; rowOrder.value = "alpha"; columnOrder.value = "count";
@@ -155,8 +154,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     for (const picker of Object.values(pickers)) picker.search.value = "";
     renderPickers(); JobApp.resetFilters();
   });
-  create("p", "heatmap-help", "Les sélections ci-dessus changent l’affichage, sans filtrer les offres. Le tri par similarité rapproche successivement les profils de proportions les plus proches, sur les lignes ou colonnes affichées. Ce tri ne constitue pas un classement des métiers.", options);
-  create("p", "heatmap-help", "Les nombres à côté des métiers indiquent leurs offres après filtrage. Une proportion est calculée sur ce total. Au clavier : Tab vers la matrice, flèches pour parcourir, Entrée ou Espace pour sélectionner, Échap pour fermer le détail et l’infobulle.", options);
+  resetView.className = "heatmap-reset";
   const summary = create("p", "heatmap-summary");
   summary.setAttribute("role", "status");
   const legend = create("div", "heatmap-legend");
@@ -167,9 +165,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
   const pattern = svg.append("defs").append("pattern").attr("id", "heatmap-unavailable").attr("width", 6).attr("height", 6).attr("patternUnits", "userSpaceOnUse");
   pattern.append("rect").attr("width", 6).attr("height", 6).attr("fill", "#eef0f2");
   pattern.append("path").attr("d", "M0,6L6,0").attr("stroke", "#cad1d6");
-  const cellsLayer = svg.append("g"), columnLabels = svg.append("g"), rowLabels = svg.append("g");
+  const cellsLayer = svg.append("g");
+  const readingGuide = svg.append("g").attr("class", "heatmap-reading-guide")
+    .attr("aria-hidden", "true").attr("pointer-events", "none").attr("display", "none");
+  const rowGuide = readingGuide.append("rect");
+  const columnGuide = readingGuide.append("rect");
+  const columnLabels = svg.append("g"), rowLabels = svg.append("g");
   const columnBackground = columnLabels.append("rect").attr("fill", "white");
+  const columnMarker = columnLabels.append("rect").attr("class", "heatmap-column-marker").attr("display", "none").attr("pointer-events", "none");
   const rowBackground = rowLabels.append("rect").attr("fill", "white");
+  const rowMarker = rowLabels.append("rect").attr("class", "heatmap-row-marker").attr("display", "none").attr("pointer-events", "none");
   const corner = svg.append("rect").attr("fill", "white");
   const details = create("div", "heatmap-details");
   details.hidden = true;
@@ -183,8 +188,35 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
   let countMaximum = 1;
   let tooltipTarget = null, tooltipTimer = null;
   let pointerPosition = null, dismissedPointer = null;
+  let guideTarget = null, finishSort = null, renderVersion = 0;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const percent = value => value === null ? "Non disponible" : `${(value * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %`;
   const description = value => `${value.job}, ${value.skill}\n${value.total ? `${value.count} / ${value.total} offres, ${percent(value.rate)}` : "Aucune offre de ce métier après filtrage"}`;
+
+  function clearReadingGuide() {
+    guideTarget = null;
+    readingGuide.attr("display", "none");
+    rowMarker.attr("display", "none");
+    columnMarker.attr("display", "none");
+    rowLabels.selectAll("text").classed("is-active", false);
+    columnLabels.selectAll("text").classed("is-active", false);
+  }
+
+  function showReadingGuide(target) {
+    if (!target?.isConnected) return clearReadingGuide();
+    guideTarget = target;
+    const value = target.__data__;
+    const x = Number(target.getAttribute("x")), y = Number(target.getAttribute("y"));
+    const width = Number(target.getAttribute("width")), height = Number(target.getAttribute("height"));
+    const left = Number(corner.attr("width")), top = Number(corner.attr("height"));
+    readingGuide.attr("display", null);
+    rowGuide.attr("x", left).attr("y", y).attr("width", columnLabels.selectAll("text").size() * width).attr("height", height);
+    columnGuide.attr("x", x).attr("y", top).attr("width", width).attr("height", rowLabels.selectAll("text").size() * height);
+    rowMarker.attr("display", null).attr("x", 0).attr("y", y).attr("width", left).attr("height", height);
+    columnMarker.attr("display", null).attr("x", x).attr("y", top - 4).attr("width", width).attr("height", 3);
+    rowLabels.selectAll("text").classed("is-active", profile => profile.job === value.job);
+    columnLabels.selectAll("text").classed("is-active", skill => skill === value.skill);
+  }
 
   function hideTooltip() {
     clearTimeout(tooltipTimer);
@@ -291,9 +323,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     });
   }
 
-  function render() {
+  function render(animate = false) {
     if (!state) return;
+    const version = ++renderVersion;
+    finishSort = null;
+    svg.interrupt("heatmap-sort").selectAll("*").interrupt("heatmap-sort");
+    cellsLayer.selectAll("rect").style("pointer-events", null);
+    const previousRows = new Map(rowLabels.selectAll("text").nodes().map(node => [node.__data__.job, node.getAttribute("y")]));
+    const previousColumns = new Map(columnLabels.selectAll("text").nodes().map(node => [node.__data__, node.getAttribute("transform")]));
     hideTooltip();
+    clearReadingGuide();
     let displayed = profiles.filter(profile => selectedJobs.has(profile.job));
     const skills = HeatmapData.orderSkills([...selectedSkills], displayed, columnOrder.value);
     displayed = HeatmapData.orderProfiles(displayed, skills, rowOrder.value);
@@ -326,12 +365,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     columnBackground.attr("x", left).attr("width", skills.length * size + 16).attr("height", top);
     rowBackground.attr("width", left).attr("height", top + displayed.length * size + 16);
     corner.attr("width", left).attr("height", top);
-    rowLabels.selectAll("text").data(displayed, profile => profile.job).join("text")
-      .attr("class", "heatmap-axis").attr("x", left - 10).attr("y", (_, index) => top + index * size + size / 2)
+    const rowY = (_, index) => top + index * size + size / 2;
+    const columnTransform = (_, index) => `translate(${left + index * size + size / 2},${top - 10}) rotate(-55)`;
+    const cellX = value => left + value.column * size;
+    const cellY = value => top + value.row * size;
+    const rowTexts = rowLabels.selectAll("text").data(displayed, profile => profile.job).join("text")
+      .attr("class", "heatmap-axis").attr("x", left - 10).attr("y", rowY)
       .attr("text-anchor", "end").attr("dominant-baseline", "middle")
       .text(profile => `${left < 270 && profile.job.length > 18 ? `${profile.job.slice(0, 16)}…` : profile.job} (${profile.count} offres)`);
-    columnLabels.selectAll("text").data(skills, skill => skill).join("text")
-      .attr("class", "heatmap-axis").attr("transform", (_, index) => `translate(${left + index * size + size / 2},${top - 10}) rotate(-55)`)
+    const columnTexts = columnLabels.selectAll("text").data(skills, skill => skill).join("text")
+      .attr("class", "heatmap-axis").attr("transform", columnTransform)
       .attr("text-anchor", "start").text(skill => skill);
     // Include the full painted extent of rotated labels, including when only
     // one long skill is selected. Cell dimensions and positions stay unchanged.
@@ -342,13 +385,38 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     columnBackground.attr("width", svgWidth - left);
     const cells = cellsLayer.selectAll("rect").data(matrix, value => JSON.stringify([value.job, value.skill])).join("rect")
       .attr("class", "heatmap-cell").classed("is-selected", value => chosen?.job === value.job && chosen?.skill === value.skill)
-      .attr("x", value => left + value.column * size).attr("y", value => top + value.row * size)
       .attr("width", size).attr("height", size)
       .attr("fill", value => value.rate === null ? "url(#heatmap-unavailable)" : color(metric.value === "rate" ? value.rate : value.count))
       .attr("role", "button").attr("tabindex", (_, index) => index === 0 ? 0 : -1)
       .attr("aria-pressed", value => chosen?.job === value.job && chosen?.skill === value.skill ? "true" : "false")
       .attr("aria-label", description);
+    const placeCells = selection => selection.attr("x", cellX).attr("y", cellY);
+    const placeRows = selection => selection.attr("y", rowY);
+    const placeColumns = selection => selection.attr("transform", columnTransform);
+    if (animate === true && !reducedMotion.matches && previousRows.size && cells.size() && cells.size() <= 5000) {
+      // Measure headers at their final positions above, then animate from the
+      // previous positions. Only explicit sorting requests enter this branch.
+      rowTexts.attr("y", (profile, index) => previousRows.get(profile.job) ?? rowY(profile, index));
+      columnTexts.attr("transform", (skill, index) => previousColumns.get(skill) ?? columnTransform(skill, index));
+      dismissedPointer = pointerPosition;
+      cells.style("pointer-events", "none");
+      finishSort = () => {
+        if (version !== renderVersion) return;
+        svg.interrupt("heatmap-sort").selectAll("*").interrupt("heatmap-sort");
+        placeCells(cells); placeRows(rowTexts); placeColumns(columnTexts);
+        cells.style("pointer-events", null);
+        finishSort = null;
+      };
+      const transition = svg.transition("heatmap-sort").duration(260).ease(d3.easeCubicInOut);
+      const movements = [placeCells(cells.transition(transition)), placeRows(rowTexts.transition(transition)), placeColumns(columnTexts.transition(transition))];
+      Promise.all(movements.map(movement => movement.end())).then(() => {
+        if (version === renderVersion) finishSort?.();
+      }).catch(() => { /* A new render or keyboard interaction interrupted the sort. */ });
+    } else {
+      placeCells(cells);
+    }
     const choose = value => {
+      finishSort?.();
       dismissedPointer = pointerPosition;
       hideTooltip();
       chosen = chosen?.job === value.job && chosen?.skill === value.skill ? null : { job: value.job, skill: value.skill };
@@ -356,9 +424,20 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
         .attr("aria-pressed", value => chosen?.job === value.job && chosen?.skill === value.skill ? "true" : "false");
       renderDetail();
     };
-    cells.on("pointerenter focus", showTooltip).on("pointerleave blur", delayHideTooltip)
+    cells.on("pointerenter focus", (event, value) => {
+      finishSort?.();
+      showReadingGuide(event.currentTarget);
+      showTooltip(event, value);
+    }).on("pointerleave blur", event => {
+      delayHideTooltip();
+      if (guideTarget !== event.currentTarget) return;
+      const focused = document.activeElement;
+      if (cellsLayer.node().contains(focused) && (event.type !== "blur" || focused !== event.currentTarget)) showReadingGuide(focused);
+      else clearReadingGuide();
+    })
       .on("click", (_, value) => choose(value))
       .on("keydown", (event, value) => {
+        finishSort?.();
         if (event.key === "Enter" || event.key === " ") { event.preventDefault(); choose(value); return; }
         if (event.key === "Escape") { chosen = null; hideTooltip(); cells.classed("is-selected", false).attr("aria-pressed", "false"); renderDetail(); return; }
         const movement = { ArrowRight: [0, 1], ArrowLeft: [0, -1], ArrowDown: [1, 0], ArrowUp: [-1, 0], Home: [0, -value.column], End: [0, skills.length - value.column - 1] }[event.key];
@@ -385,6 +464,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
 
   function focusCell(cell) {
     if (!cell?.isConnected) return;
+    finishSort?.();
     cellsLayer.selectAll("rect").attr("tabindex", function () { return this === cell ? 0 : -1; });
     cell.focus({ preventScroll: true });
     const x = Number(cell.getAttribute("x")), y = Number(cell.getAttribute("y"));
@@ -399,7 +479,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     updateTooltipAfterScroll();
   }
 
-  for (const control of [metric, rowOrder, columnOrder]) control.addEventListener("change", render);
+  metric.addEventListener("change", () => render());
+  for (const control of [rowOrder, columnOrder]) control.addEventListener("change", () => render(true));
+  reducedMotion.addEventListener("change", event => { if (event.matches) finishSort?.(); });
   scroll.addEventListener("scroll", () => { pinLabels(); updateTooltipAfterScroll(); });
   window.addEventListener("resize", render);
   window.addEventListener("scroll", updateTooltipAfterScroll, { passive: true });

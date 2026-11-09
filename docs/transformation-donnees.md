@@ -27,7 +27,7 @@ Les nombres utilisent un point décimal, sans symbole monétaire. Les booléens 
 
 `js/dataset.js` valide et prépare le CSV avant de le conserver dans IndexedDB. Une erreur de validation ou d’écriture conserve le fichier actif précédent. Le contenu n’est jamais envoyé au serveur et ne remplace pas le CSV du dépôt. Il reste disponible entre les pages et après rechargement sur la même origine (protocole, hôte et port), jusqu’au retour au fichier du projet ou à la suppression du stockage du site. Changer de port ou de navigateur ne transfère pas ce choix.
 
-Le bouton de retour au fichier du projet vérifie d’abord que celui-ci est lisible, puis supprime le CSV importé. En cas de stockage inaccessible ou de fichier conservé incompatible, les pages utilisent le fichier du projet avec un message explicite. La source active est indiquée sur l’accueil et près du compteur de chaque visualisation. Les limites particulières restent celles des représentations : la carte ne positionne que les villes connues de sa table locale ; les catégories inconnues rejoignent « Autres métiers » dans le regroupement en familles.
+Le bouton de retour au fichier du projet vérifie d’abord que celui-ci est lisible, puis supprime le CSV importé. En cas de stockage inaccessible ou de fichier conservé incompatible, les pages utilisent le fichier du projet avec un message explicite. La source active est indiquée sur l’accueil, accessible depuis chaque visualisation par « Toutes les visualisations ». Les limites particulières restent celles des représentations : la carte ne positionne que les villes connues de sa table locale ; les catégories inconnues rejoignent « Autres métiers » dans le regroupement en familles.
 
 ## Préparation commune
 

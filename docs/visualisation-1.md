@@ -26,13 +26,15 @@ Un clic sur le fond ou Échap dans la carte efface la sélection, sans revenir a
 ## Points de lecture
 
 - `Global` décrit une localisation, pas un mode de travail. Le panneau non localisé rassemble les offres `Global`, les villes `Remote` et les offres sans localisation géographique exploitable.
-- Le libellé actuel « offres 100% à distance » du panneau non localisé est trompeur : son calcul utilise `is_remote_friendly` et inclut les hybrides. Le texte présentant toutes ces offres comme ouvertes mondialement en télétravail ne découle pas non plus de ce seul indicateur de localisation.
-- « Les plus demandés » dans ce panneau correspond au nombre d’offres, pas au champ `demand_score`.
+- Le nombre d’offres hybrides ou à distance repose sur `is_remote_friendly`, y compris dans les offres non localisées. Il ne mesure pas le télétravail intégral.
+- « Métiers les plus représentés » correspond au nombre d’offres, pas au champ `demand_score`.
 - Le compteur en haut de page donne le nombre d’offres après les filtres de la carte, y compris les offres non positionnées. Un zoom ou la sélection d’un pays ou d’une ville ne change pas ce compteur. Le résumé sous la carte distingue les offres positionnées et non positionnées.
 - Les villes absentes de la table locale de coordonnées restent dans les totaux et le tableau, sans cercle. Le fond géographique peut omettre de très petits pays.
 
 ## Implémentation
 
 La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-1/`. Le script reçoit les offres via `JobApp.subscribe()` et gère ses filtres localement. D3 assure la projection rectangulaire (`geoEquirectangular`), les tracés géographiques, le zoom, l’échelle des rayons, les regroupements et les jointures SVG. Les coordonnées des villes sont définies dans `cityCoordinates` ; le fond est `data/world-countries.geojson`.
+
+La carte délimite elle-même sa zone de dessin. Les détails se prolongent sous le graphique, avec une liste de mesures et deux répartitions, sans cartes de statistiques imbriquées. Le type de lieu et les actions sont indiqués par le titre et les contrôles, sans badge supplémentaire.
 
 Le fichier actif est choisi sur l’accueil et partagé par les quatre pages. L’import n’ajoute pas de coordonnées : une nouvelle ville reste dans les comptes et le tableau si elle est absente de `cityCoordinates`. Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est illustratif et ne change pas avec le fichier choisi.
