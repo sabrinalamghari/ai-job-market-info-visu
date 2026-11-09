@@ -89,7 +89,6 @@ button:disabled { opacity: .5; cursor: default; }
   .parallel-toolbar > button { flex: 1 1 160px; }
 }
 
-/* Interface épurée : graphique central, légende passive, détails à la demande. */
 .parallel-legend li { color: var(--muted); }
 .parallel-analysis-results:not([hidden]) { margin: 16px 0; }
 .parallel-analysis-results h4 { margin: 0 0 8px; }

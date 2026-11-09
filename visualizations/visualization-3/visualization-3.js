@@ -1,8 +1,8 @@
 const HeatmapData = (() => {
   const compare = (a, b) => a.localeCompare(b, "fr");
 
-  // One offer contributes at most once to each skill. Keep titles without offers
-  // after filtering so that unavailable cells remain distinct from observed zeroes.
+  //one offer contributes at most once to each skill. Keep titles without offers
+  //after filtering so that unavailable cells remain distinct from observed zeroes.
   function aggregateByJob(rows, titles = [...new Set(rows.map(row => row.job_title))]) {
     const groups = new Map(titles.map(job => [job, { job, count: 0, skills: new Map() }]));
     for (const row of rows) {
@@ -33,8 +33,8 @@ const HeatmapData = (() => {
     return [...skillCounts(profiles)].sort((a, b) => b[1] - a[1] || compare(a[0], b[0])).slice(0, limit).map(([skill]) => skill);
   }
 
-  // Deterministic nearest-neighbour ordering, not a statistical clustering.
-  // Input is alphabetical; vectors contain rates on the displayed dimensions.
+  //deterministic nearest-neighbour ordering, not a statistical clustering.
+  //input is alphabetical; vectors contain rates on the displayed dimensions.
   function similarityOrder(items, vector) {
     if (items.length < 2) return [...items];
     const remaining = items.slice(1), result = [items[0]];
@@ -233,8 +233,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
   }
 
   function showTooltip(event, value) {
-    // Removing a hovered tooltip can expose a different cell under the pointer.
-    // Escape must not immediately reopen a tooltip without deliberate movement.
+    //removing a hovered tooltip can expose a different cell under the pointer.
+    //escape must not immediately reopen a tooltip without deliberate movement.
     if (event.type === "pointerenter" && dismissedPointer && event.clientX === dismissedPointer.x && event.clientY === dismissedPointer.y) return;
     dismissedPointer = null;
     hideTooltip();
@@ -376,8 +376,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     const columnTexts = columnLabels.selectAll("text").data(skills, skill => skill).join("text")
       .attr("class", "heatmap-axis").attr("transform", columnTransform)
       .attr("text-anchor", "start").text(skill => skill);
-    // Include the full painted extent of rotated labels, including when only
-    // one long skill is selected. Cell dimensions and positions stay unchanged.
+    //include the full painted extent of rotated labels, including when only
+    //one long skill is selected. Cell dimensions and positions stay unchanged.
     const svgLeft = svg.node().getBoundingClientRect().left;
     const labelRight = d3.max(columnLabels.selectAll("text").nodes(), node => node.getBoundingClientRect().right - svgLeft) ?? 0;
     const svgWidth = Math.ceil(Math.max(left + skills.length * size, labelRight) + 16);
@@ -394,8 +394,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
     const placeRows = selection => selection.attr("y", rowY);
     const placeColumns = selection => selection.attr("transform", columnTransform);
     if (animate === true && !reducedMotion.matches && previousRows.size && cells.size() && cells.size() <= 5000) {
-      // Measure headers at their final positions above, then animate from the
-      // previous positions. Only explicit sorting requests enter this branch.
+      //measure headers at their final positions above, then animate from the
+      //previous positions. Only explicit sorting requests enter this branch.
       rowTexts.attr("y", (profile, index) => previousRows.get(profile.job) ?? rowY(profile, index));
       columnTexts.attr("transform", (skill, index) => previousColumns.get(skill) ?? columnTransform(skill, index));
       dismissedPointer = pointerPosition;
@@ -411,7 +411,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = HeatmapDat
       const movements = [placeCells(cells.transition(transition)), placeRows(rowTexts.transition(transition)), placeColumns(columnTexts.transition(transition))];
       Promise.all(movements.map(movement => movement.end())).then(() => {
         if (version === renderVersion) finishSort?.();
-      }).catch(() => { /* A new render or keyboard interaction interrupted the sort. */ });
+      }).catch(() => { /*a new render or keyboard interaction interrupted the sort. */ });
     } else {
       placeCells(cells);
     }

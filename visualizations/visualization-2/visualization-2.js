@@ -46,17 +46,14 @@ const ParallelData = (() => {
   }
 
   const minimumCount = 10;
-  function eligible(profile) {
-    return profile.count >= minimumCount && dimensions.every(axis => finite(profile[axis.key]) && profile.validCounts[axis.key] >= minimumCount);
-  }
-  // Avec un filtre actif, ne pas masquer toutes les catégories peu représentées.
-  // Chaque mesure doit néanmoins disposer d'au moins une valeur réelle valide.
+  //avec un filtre actif, ne pas masquer toutes les catégories peu représentées.
+  //chaque mesure doit néanmoins disposer d'au moins une valeur réelle valide.
   function eligibleForDisplay(profile, hasFilters = false) {
     const min = hasFilters ? 1 : minimumCount;
     return profile.count >= min && dimensions.every(axis => finite(profile[axis.key]) && profile.validCounts[axis.key] >= min);
   }
-  // La proportion Entry doit être calculée indépendamment du filtre expérience.
-  // Les autres filtres (pays, secteur, etc.) restent pris en compte.
+  //la proportion Entry doit être calculée indépendamment du filtre expérience.
+  //les autres filtres (pays, secteur, etc.) restent pris en compte.
   function entryReferenceRows(allRows, filters = {}) {
     return allRows.filter(row => Object.entries(filters).every(([key, value]) =>
       key === "experience_level" || !value || row[key] === value));
@@ -81,19 +78,6 @@ const ParallelData = (() => {
       return [key, { min: quantile(values, 0), q1: quantile(values, .25), median: quantile(values, .5), q3: quantile(values, .75), max: quantile(values, 1) }];
     }));
   }
-  function presetRanges(name, stats) {
-    const high = (key, threshold = "q3") => [key, [stats[key][threshold], stats[key].max]];
-    const primary = dimensions.slice(0, 5).map(axis => axis.key);
-    const presets = {
-      sweet: primary.map(key => high(key, "median")),
-      reward: [high("salaryMedian"), high("demandMean"), ["entryRate", [stats.entryRate.min, stats.entryRate.q1]]],
-      accessible: [high("entryRate"), ["salaryMedian", [stats.salaryMedian.min, stats.salaryMedian.median]]],
-      balanced: dimensions.map(axis => high(axis.key, "q1")),
-      salary: [high("salaryMedian")], growth: [high("growthMean")],
-      remote: [high("remoteRate")], junior: [high("entryRate")],
-    };
-    return new Map(presets[name] || []);
-  }
   function comparison(profile, axis, stats, profiles) {
     const value = profile[axis.key], baseline = stats[axis.key].median;
     const delta = value - baseline;
@@ -103,20 +87,13 @@ const ParallelData = (() => {
       : axis.key === "salaryMedian" && baseline !== 0
         ? `${sign}${(Math.abs(delta / baseline) * 100).toFixed(1)} %`
         : `${sign}${Math.abs(delta).toFixed(1)}`;
-    // Rang médian des ex æquo ; tous égaux => 50e percentile.
+    //rang médian des ex aequo ; tous égaux => 50e percentile.
     const below = profiles.filter(row => row[axis.key] < value).length;
     const equal = profiles.filter(row => row[axis.key] === value).length;
     return { difference, percentile: 100 * (below + equal / 2) / profiles.length };
   }
-  function hiddenGems(profiles, stats) {
-    const varying = dimensions.filter(axis => stats[axis.key].min < stats[axis.key].max);
-    return profiles.filter(profile => varying.length >= 4
-      && dimensions.every(axis => profile[axis.key] >= stats[axis.key].q1)
-      && varying.every(axis => profile[axis.key] < stats[axis.key].max)
-      && varying.filter(axis => profile[axis.key] >= stats[axis.key].median).length >= 4);
-  }
-  // Min/max taken before brushing: distances remain comparable as candidates change.
-  // Incomplete pairs are excluded, never imputed; constant axes carry no distance.
+  //min/max taken before brushing: distances remain comparable as candidates change.
+  //incomplete pairs are excluded, never imputed; constant axes carry no distance.
   function distance(a, b, stats) {
     let sum = 0, count = 0;
     for (const { key } of dimensions) {
@@ -133,34 +110,7 @@ const ParallelData = (() => {
       .filter(row => row.distance !== null)
       .sort((a, b) => a.distance - b.distance || a.profile.job.localeCompare(b.profile.job)).slice(0, limit);
   }
-  function atypical(candidates, stats, limit = 3) {
-    const center = Object.fromEntries(dimensions.map(({ key }) => [key, stats[key].median]));
-    return candidates.map(profile => ({ profile, distance: distance(profile, center, stats),
-      contributions: dimensions.filter(({ key }) => stats[key].max > stats[key].min && finite(profile[key]))
-        .map(axis => ({ key: axis.key, contribution: ((profile[axis.key] - center[axis.key]) / (stats[axis.key].max - stats[axis.key].min)) ** 2 }))
-        .sort((a, b) => b.contribution - a.contribution) }))
-      .filter(row => row.distance !== null && row.distance > 0)
-      .sort((a, b) => b.distance - a.distance || a.profile.job.localeCompare(b.profile.job)).slice(0, limit);
-  }
-  function correlation(profiles, keyA, keyB) {
-    const pairs = profiles.filter(row => finite(row[keyA]) && finite(row[keyB]));
-    const n = pairs.length;
-    if (n < 3) return { n, value: null };
-    const a = mean(pairs.map(row => row[keyA])), b = mean(pairs.map(row => row[keyB]));
-    let aa = 0, bb = 0, ab = 0;
-    for (const row of pairs) { const da = row[keyA] - a, db = row[keyB] - b; aa += da * da; bb += db * db; ab += da * db; }
-    return { n, value: aa && bb ? Math.max(-1, Math.min(1, ab / Math.sqrt(aa * bb))) : null };
-  }
-  function relationship(profile, keyA, keyB, stats) {
-    if (![keyA, keyB].every(key => finite(profile[key]) && stats[key].max > stats[key].min)) return null;
-    const a = profile[keyA], b = profile[keyB];
-    if (a >= stats[keyA].q3 && b >= stats[keyB].q3) return "high";
-    if (a <= stats[keyA].q1 && b <= stats[keyB].q1) return "low";
-    if ((a >= stats[keyA].q3 && b <= stats[keyB].q1) || (b >= stats[keyB].q3 && a <= stats[keyA].q1)) return "tradeoff";
-    return null;
-  }
-  return { dimensions, aggregateByJob, matchesBrushes, minimumCount, eligible, eligibleForDisplay, entryReferenceRows, applyEntryReference, quantile, statistics, presetRanges, comparison, hiddenGems,
-    distance, similar, atypical, correlation, relationship };
+  return { dimensions, aggregateByJob, matchesBrushes, minimumCount, eligibleForDisplay, entryReferenceRows, applyEntryReference, quantile, statistics, comparison, distance, similar };
 })();
 if (typeof module !== "undefined" && module.exports) module.exports = ParallelData;
 
