@@ -1,65 +1,67 @@
-# À quoi sert `data.js` ?
+# Transformation et chargement des données
 
-`js/data.js` prépare les données du CSV pour les graphiques. Les valeurs lues dans un CSV sont des textes : il faut convertir certaines d'entre elles pour pouvoir calculer, trier et filtrer correctement.
+## Source et périmètre
 
-## Les transformations principales
+Les quatre pages utilisent le fichier local `data/ai_jobs_market_2025_2026.csv`, qui contient 1 500 offres, 25 métiers et 93 libellés de compétences distincts après déduplication au sein des offres. Aucun chargement d’un autre CSV n’est proposé.
 
-| Avant | Après | Pourquoi ? |
+Chaque page charge ce fichier une fois et conserve son propre état en mémoire. Les filtres et sélections ne sont pas transférés lors d’un changement de page. Les aperçus SVG de l’accueil sont statiques ; une modification du fichier source demande de les vérifier et, si nécessaire, de les mettre à jour séparément.
+
+## Préparation commune
+
+`js/data.js` vérifie la présence des 25 colonnes attendues. Une colonne absente provoque une erreur explicite. `JobData.prepareData(rows)` renvoie les offres préparées (`jobs`) et un bilan de qualité (`quality`).
+
+| Valeur du CSV | Valeur préparée | Utilisation |
 | --- | --- | --- |
-| `"239000"` | `239000` | Utiliser le salaire comme un nombre pour les calculs |
-| `"7"` | `7` | Comparer les années d'expérience comme des nombres |
-| `"1"` ou `"0"` | `true` ou `false` | Utiliser les indicateurs senior, télétravail et LLM comme des booléens |
-| `" Paris "` | `"Paris"` | Retirer les espaces inutiles autour des textes |
-| `"Python\|SQL\|Python"` | `["Python", "SQL"]` | Obtenir un tableau de compétences sans doublons |
+| `"239000"` | `239000` | Calculs numériques de salaire |
+| `"7"` | `7` | Calculs sur les années d’expérience |
+| `"1"` ou `"0"` | `true` ou `false` | Indicateurs senior, télétravail et LLM |
+| `" Paris "` | `"Paris"` | Textes sans espaces périphériques |
+| `"Python\|SQL\|Python"` | `["Python", "SQL"]` | Liste de compétences sans doublons |
 
-## Les vérifications
+Un nombre vide ou non fini devient `null`. Un booléen différent de `"1"` ou `"0"` devient aussi `null`. Les libellés de compétences différents ne sont pas fusionnés.
 
-Le code vérifie que les 25 colonnes attendues existent. S'il en manque, il renvoie une erreur avec leurs noms.
+Quatre champs sont ajoutés :
 
-Il signale aussi les problèmes rencontrés, par exemple :
+- `job_family` : regroupement des catégories en cinq familles ; une catégorie non répertoriée devient « Autres métiers » ;
+- `posting_period` : année et mois réunis, ou `null` si la période est invalide ;
+- `has_geographic_location` : ville et pays renseignés et différents de `Remote` et `Global`, sans vérification des coordonnées ;
+- `issues` : liste des anomalies repérées sur l’offre.
 
-- un profil « débutant, 0–2 ans » associé à 7 ans d'expérience ;
-- un salaire annuel hors de la fourchette indiquée ;
-- une localisation « Remote » associée au travail sur site ;
-- un identifiant répété.
+## Contrôles et calculs
 
-Ces incohérences sont conservées et signalées : le code ne décide pas arbitrairement quelle valeur corriger et ne supprime aucune ligne.
+Les contrôles signalent notamment les valeurs manquantes, les incohérences entre niveau déclaré et années d’expérience, les salaires hors fourchette, les contradictions entre localisation et mode de travail, et les identifiants répétés.
 
-## Les informations ajoutées
+Aucune ligne n’est supprimée et aucune valeur contradictoire n’est choisie arbitrairement comme correction. Le CSV reste intact ; de nouveaux objets sont créés en mémoire. Les règles d’exclusion propres aux mesures restent dans chaque script de visualisation. Une alerte sur une offre peut concerner une colonne inutilisée par une mesure.
 
-Chaque ligne reçoit trois champs utiles :
+Les champs `experience_level` et `years_of_experience` restent distincts. De même, `job_family` est un regroupement dérivé de `job_category`, pas un synonyme. Le drapeau `is_remote_friendly` inclut les hybrides dans ce fichier ; `Global` décrit une localisation et ne garantit pas le télétravail intégral.
 
-- `posting_period` : l'année et le mois réunis, par exemple `"2026-03"` ;
-- `has_geographic_location` : indique si ville et pays sont renseignés et différents de « Remote » et « Global », sans vérifier les coordonnées ;
-- `issues` : la liste des problèmes repérés sur cette ligne.
+## Chargement et API
 
-## Comment utiliser le résultat ?
-
-`transformJob()` prépare une ligne. `prepareData()` prépare toutes les lignes et renvoie :
+`js/app.js` lit le CSV avec `d3.csv()`, appelle `JobData.prepareData()` puis transmet l’état aux abonnés. Le chemin est résolu depuis le script avec `new URL()`, indépendamment du dossier de la page HTML.
 
 ```js
-const { jobs, quality } = JobData.prepareData(rows);
-```
-
-- `rows` : les lignes brutes déjà lues depuis le CSV ;
-- `jobs` : les lignes préparées pour les graphiques ;
-- `quality` : le nombre de lignes et le bilan des problèmes détectés.
-
-**Le CSV original reste intact.** La préparation crée de nouveaux objets en mémoire. `data.js` prépare les valeurs ; les calculs propres aux graphiques restent dans les scripts de visualisation.
-
-## Chargement commun entre toutes les visualisations
-
-`server.js` sert la page et le fichier D3 installé par npm dans `node_modules/d3/dist/d3.min.js`. D3 est déclaré dans `package.json` et sa version est enregistrée dans `package-lock.json`. Pour lancer le projet : `npm install`, puis `npm start`, et ouvrir http://localhost:3000. Après installation des dépendances, un serveur statique comme `python -m http.server 8000` fonctionne également.
-
-`js/app.js` charge le CSV du projet une seule fois sur chaque page qui l’inclut, appelle `JobData.prepareData()` et transmet le résultat aux visualisations présentes sur cette page. La page d’accueil contient les liens vers les visualisations ; la carte possède sa propre page dans `visualizations/visualization-1/visualization-1.html`.
-
-Le chemin du CSV est calculé depuis le fichier `js/app.js` avec `new URL("../data/ai_jobs_market_2025_2026.csv", document.currentScript.src)`. Il ne dépend donc pas du dossier de la page HTML.
-
-Chaque graphique reçoit les données au chargement et après chaque changement de filtre :
-
-```js
-JobApp.subscribe(({ filteredJobs, jobs, quality, filters }) => {
+JobApp.subscribe(({ jobs, filteredJobs, quality, filters }) => {
+  // Calculs et rendu de la visualisation de cette page.
 });
+JobApp.setFilters({ country: "France" });
+JobApp.resetFilters();
 ```
 
-`jobs` contient toutes les lignes préparées ; `filteredJobs` contient celles qui correspondent aux filtres. Une sélection peut appeler `JobApp.setFilters({ country: "France" })` pour actualiser tous les graphiques, et `JobApp.resetFilters()` efface les filtres. Les filtres disponibles sont `job_category`, `experience_level`, `country` et `remote_work`.
+`subscribe()` renvoie une fonction de désabonnement. `jobs` contient toutes les offres préparées ; `filteredJobs` contient celles qui correspondent aux filtres communs. L’API accepte les clés `job_category`, `job_family`, `experience_level`, `country`, `remote_work`, `industry`, `company_size` et `education_required`. Une valeur vide désactive le filtre ; les filtres actifs se combinent avec « ET ».
+
+Les visualisations 2 et 3 utilisent ces filtres communs avec des contrôles adaptés à leur page. Les visualisations 1 et 4 appliquent leurs filtres locaux à `filteredJobs`, puis actualisent le compteur avec `JobApp.updateOfferCount(count)`, sans modifier l’état des données. Sur les quatre pages, `data-status` compte les offres retenues après filtrage. Le zoom, les sélections visuelles, les plages sur les profils et l’ouverture d’une catégorie ne changent pas ce compteur ; les résumés locaux précisent le sous-ensemble affiché lorsque nécessaire.
+
+## Organisation et D3
+
+Chaque dossier de visualisation contient sa page HTML, ses styles, son script et son aperçu. Les pages chargent avec `defer`, dans l’ordre : D3, `js/data.js`, `js/app.js`, puis leur script. `JobData` et `JobApp` sont les interfaces partagées. Les calculs et interactions particuliers restent dans les dossiers des visualisations.
+
+| Visualisation | Calcul principal | Rôle de D3 |
+| --- | --- | --- |
+| Carte | Effectifs par pays et ville | Projection, tracés, zoom, rayons et jointures |
+| Coordonnées parallèles | Six indicateurs par métier | Échelles, axes, lignes, plages et glissements |
+| Heatmap | Comptes et proportions métier/compétence | Jointures de la matrice et échelle de couleur |
+| Treemap | Hiérarchie catégorie/métier, effectifs et médianes | Hiérarchie, découpage, échelles et transitions |
+
+Les modules purs `ParallelData` et `HeatmapData` séparent les calculs du rendu dans les visualisations 2 et 3. La carte et la treemap regroupent leurs fonctions dans leur composant local. Ces différences d’organisation ne changent pas le chargement commun.
+
+Le démarrage et les dépendances sont décrits dans le [README](../README.md). Les quatre notices précisent les mesures, filtres, interactions et points de lecture propres à chaque visualisation : [carte](visualisation-1.md), [coordonnées parallèles](visualisation-2.md), [heatmap](visualisation-3.md), [treemap](visualisation-4.md).

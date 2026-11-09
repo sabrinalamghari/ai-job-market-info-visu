@@ -637,6 +637,7 @@
       (!remoteInput.property("checked") || job.is_remote_friendly === true) &&
       selects.every(column => !values[column] || job[column] === values[column])
     );
+    JobApp.updateOfferCount(selectedJobs.length);
     root.select("#map-salary-value").text(minimumSalary <= Number(salaryInput.attr("min"))
       ? "Tous les salaires" : `Au moins ${formatSalary.format(minimumSalary)}`);
 
