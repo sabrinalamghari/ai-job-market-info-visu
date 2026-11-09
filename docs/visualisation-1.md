@@ -35,4 +35,4 @@ Un clic sur le fond ou Échap dans la carte efface la sélection, sans revenir a
 
 La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-1/`. Le script reçoit les offres via `JobApp.subscribe()` et gère ses filtres localement. D3 assure la projection rectangulaire (`geoEquirectangular`), les tracés géographiques, le zoom, l’échelle des rayons, les regroupements et les jointures SVG. Les coordonnées des villes sont définies dans `cityCoordinates` ; le fond est `data/world-countries.geojson`.
 
-Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est un SVG statique, indépendant des interactions de la page.
+Le fichier actif est choisi sur l’accueil et partagé par les quatre pages. L’import n’ajoute pas de coordonnées : une nouvelle ville reste dans les comptes et le tableau si elle est absente de `cityCoordinates`. Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est illustratif et ne change pas avec le fichier choisi.

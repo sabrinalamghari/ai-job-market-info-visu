@@ -576,21 +576,19 @@
     })).sort((a, b) => b.count - a.count).slice(0, 4);
 
     const maxJobCount = jobCounts[0]?.count || 1;
-    jobsBarsContainer.html(jobCounts.map(item => {
+    jobsBarsContainer.selectAll("*").remove();
+    const jobBars = jobsBarsContainer.selectAll(".map-bar-item").data(jobCounts).join("div")
+      .attr("class", "map-bar-item");
+    jobBars.each(function (item) {
       const pct = Math.round((item.count / targetJobs.length) * 100);
       const widthPct = Math.max(8, Math.round((item.count / maxJobCount) * 100));
-      return `
-        <div class="map-bar-item">
-          <div class="map-bar-header">
-            <span class="map-bar-name" title="${item.title}">${item.title}</span>
-            <span class="map-bar-stat">${item.count} (${pct}%)</span>
-          </div>
-          <div class="map-bar-track">
-            <div class="map-bar-fill" style="width: ${widthPct}%"></div>
-          </div>
-        </div>
-      `;
-    }).join(""));
+      const bar = d3.select(this);
+      const header = bar.append("div").attr("class", "map-bar-header");
+      header.append("span").attr("class", "map-bar-name").attr("title", item.title).text(item.title);
+      header.append("span").attr("class", "map-bar-stat").text(`${item.count} (${pct}%)`);
+      bar.append("div").attr("class", "map-bar-track").append("div")
+        .attr("class", "map-bar-fill").style("width", `${widthPct}%`);
+    });
 
     // Experience distribution
     const expOrder = ["Entry (0-2 yrs)", "Mid (3-5 yrs)", "Senior (6-9 yrs)", "Lead (10+ yrs)"];

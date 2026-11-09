@@ -3,10 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Exploration du marché de l’emploi en intelligence artificielle en 2025 et 2026.">
-    <title>L’emploi en intelligence artificielle, données 2025–2026</title>
+    <meta name="description" content="Exploration du marché de l’emploi en intelligence artificielle à partir du fichier fourni ou d’un CSV compatible.">
+    <title>L’emploi en intelligence artificielle</title>
     <link rel="icon" type="image/svg+xml" href="css/favicon.svg">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="node_modules/d3/dist/d3.min.js" defer></script>
+    <script src="js/data.js" defer></script>
+    <script src="js/dataset.js" defer></script>
+    <script src="js/home.js" defer></script>
   </head>
   <body class="home-page">
     <a class="skip-link" href="#contenu">Aller au contenu</a>
@@ -20,14 +24,31 @@
     </header>
     <main class="container" id="contenu">
       <section class="intro" aria-labelledby="page-title">
-        <h1 id="page-title">L’emploi en intelligence artificielle</h1>
-        <div class="intro-note">
-          <p>Par lieu, par métier ou par compétence : quatre façons de parcourir le même fichier.</p>
-          <p class="dataset-note">1 500 offres, 25 métiers et 93 compétences.</p>
+        <div class="home-intro-copy">
+          <h1 id="page-title">L’emploi en intelligence artificielle</h1>
+          <div class="intro-note">
+            <p>Par lieu, par métier ou par compétence : quatre façons de parcourir le même fichier.</p>
+            <p class="dataset-note">Chargement des données…</p>
+          </div>
+        </div>
+        <div class="dataset-controls">
+          <label for="dataset-file">Changer de fichier CSV</label>
+          <p id="dataset-source">Fichier du projet</p>
+          <input id="dataset-file" type="file" accept=".csv,text/csv" aria-describedby="dataset-format" disabled>
+          <div class="dataset-help">
+            <button id="dataset-help-trigger" type="button" aria-controls="dataset-format" aria-expanded="false">Format et limites</button>
+            <div id="dataset-format" class="dataset-format-tooltip" role="tooltip" hidden>
+              <p>CSV UTF-8 avec les mêmes 25 colonnes que le fichier du projet. Maximum : 5 Mo, 20 000 offres, 200 métiers et 300 compétences.</p>
+              <p>Les données restent dans ce navigateur. Les villes inconnues restent dans les totaux et le tableau de la carte, sans point géographique.</p>
+            </div>
+          </div>
+          <button id="dataset-reset" type="button" hidden disabled>Revenir au fichier du projet</button>
+          <p id="dataset-message" role="status" aria-live="polite"></p>
         </div>
       </section>
       <section aria-labelledby="workspace-title">
         <h2 class="sr-only" id="workspace-title">Explorer le fichier</h2>
+        <p class="preview-note">Aperçus illustratifs, indépendants du fichier choisi.</p>
         <div class="exploration-index">
           <a class="exploration-entry" href="visualizations/visualization-1/visualization-1.html" aria-labelledby="title-1" aria-describedby="description-1">
             <p class="entry-index"><span>01</span> Carte mondiale</p>

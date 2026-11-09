@@ -9,7 +9,7 @@ app.get("/index.html", (request, response) => response.sendFile(path.join(__dirn
 app.get("/node_modules/d3/dist/d3.min.js", (request, response) => {
   response.sendFile(path.join(__dirname, "node_modules/d3/dist/d3.min.js"));
 });
-for (const directory of ["css", "js", "data", "visualizations"]) {
+for (const directory of ["css", "js", "data", "docs", "visualizations"]) {
   app.use(`/${directory}`, express.static(path.join(__dirname, directory)));
 }
 

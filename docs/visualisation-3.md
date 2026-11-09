@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Explorer les compétences mentionnées selon les métiers, leurs recouvrements et leurs spécialisations. La heatmap croise les 25 métiers et les 93 libellés de compétences du fichier, sans établir un classement des métiers.
+Explorer les compétences mentionnées selon les métiers, leurs recouvrements et leurs spécialisations. La heatmap croise les métiers et les compétences du fichier actif, sans établir un classement des métiers. Le fichier du projet contient 25 métiers et 93 libellés de compétences.
 
 ## Données et mesures
 
@@ -16,7 +16,7 @@ Le détail d’une cellule présente jusqu’à huit autres compétences des seu
 
 - Expérience déclarée, pays et secteur filtrent les offres avant les calculs. Le panneau est replié au chargement ; les filtres actifs restent indiqués dans le résumé.
 - Les cases métiers et compétences ne contrôlent que les lignes et colonnes visibles. Elles ne changent pas les dénominateurs des cellules conservées.
-- Les 25 métiers et les 20 compétences les plus fréquentes dans le fichier complet sont sélectionnés initialement. Toutes les compétences sont accessibles par recherche et cases à cocher.
+- Tous les métiers et jusqu’à 20 compétences les plus fréquentes dans le fichier complet sont sélectionnés initialement. Toutes les compétences sont accessibles par recherche et cases à cocher.
 - Les colonnes sélectionnées sont conservées pendant le filtrage. « 20 plus fréquentes des métiers affichés » recalcule explicitement cette sélection sur les offres filtrées de ces métiers.
 - Un métier coché reste visible même sans offre. Aucun seuil d’effectif ne supprime implicitement une ligne.
 
@@ -37,4 +37,4 @@ La matrice défile dans son conteneur en gardant les en-têtes visibles. Les val
 
 La page, les styles, le script et l’aperçu sont dans `visualizations/visualization-3/`. Le script sépare les calculs purs (`HeatmapData`) du rendu DOM/D3, comme la visualisation 2. Les contrôles sont locaux et appliquent les filtres avec `JobApp.setFilters()` ; les offres arrivent via `JobApp.subscribe()`. D3 gère les jointures SVG et l’échelle séquentielle ; le placement des cellules suit une grille calculée dans le script.
 
-Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est un SVG statique utilisant un extrait des valeurs du fichier.
+Le fichier actif est choisi sur l’accueil et partagé par les quatre pages. Les métiers, compétences et maxima sont reconstruits à partir de cette source. Le chargement et la préparation communs sont décrits dans [Transformation des données](transformation-donnees.md). L’aperçu de l’accueil est illustratif et ne change pas avec le fichier choisi.

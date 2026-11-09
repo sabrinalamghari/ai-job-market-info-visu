@@ -2,9 +2,32 @@
 
 ## Source et périmètre
 
-Les quatre pages utilisent le fichier local `data/ai_jobs_market_2025_2026.csv`, qui contient 1 500 offres, 25 métiers et 93 libellés de compétences distincts après déduplication au sein des offres. Aucun chargement d’un autre CSV n’est proposé.
+Par défaut, les quatre pages utilisent le fichier local `data/ai_jobs_market_2025_2026.csv`, qui contient 1 500 offres, 25 métiers et 93 libellés de compétences distincts après déduplication au sein des offres. Un CSV externe compatible peut être choisi sur l’accueil et remplace cette source pour les quatre visualisations.
 
-Chaque page charge ce fichier une fois et conserve son propre état en mémoire. Les filtres et sélections ne sont pas transférés lors d’un changement de page. Les aperçus SVG de l’accueil sont statiques ; une modification du fichier source demande de les vérifier et, si nécessaire, de les mettre à jour séparément.
+Chaque page charge le fichier actif une fois et conserve son propre état en mémoire. Les filtres et sélections ne sont pas transférés lors d’un changement de page. Un onglet déjà ouvert doit être rechargé pour prendre en compte un changement effectué ailleurs. Les aperçus SVG de l’accueil sont statiques et signalés comme illustratifs ; ils ne changent pas avec la source.
+
+## Import depuis l’accueil
+
+« Changer de fichier CSV » permet de choisir un fichier `.csv` UTF-8, avec ou sans BOM, séparé par des virgules, des points-virgules ou des tabulations. L’aide « Format et limites » apparaît au survol ou au focus clavier, et au toucher sur écran tactile ; Échap ou un clic extérieur la ferme. Les champs contenant le séparateur doivent être entourés de guillemets doubles selon le format CSV. Les compétences restent séparées par `|` à l’intérieur du champ `required_skills`.
+
+Les 25 colonnes suivantes doivent être présentes, avec ces noms exacts, dans un ordre quelconque :
+
+```text
+job_id, job_title, job_category, experience_level, education_required,
+city, country, remote_work, company_size, industry, required_skills,
+salary_tier, years_of_experience, annual_salary_usd, salary_min_usd,
+salary_max_usd, ai_salary_premium_pct, demand_score, demand_growth_yoy_pct,
+benefits_score_10, posting_year, posting_month, is_senior,
+is_remote_friendly, is_llm_role
+```
+
+Les noms de colonnes doivent être non vides et uniques. Les colonnes supplémentaires sont tolérées et ignorées par la préparation. Chaque ligne doit avoir le même nombre de champs que l’en-tête et renseigner `job_title` et `job_category`. Un fichier sans offre est refusé. Pour garder un affichage praticable, l’import est limité à 5 Mo, 20 000 offres, 200 métiers et 300 compétences distinctes.
+
+Les nombres utilisent un point décimal, sans symbole monétaire. Les booléens attendent `1` ou `0`. Pour conserver le sens des indicateurs, les niveaux d’expérience reconnus sont `Entry (0-2 yrs)`, `Mid (3-5 yrs)`, `Senior (6-9 yrs)`, `Lead (10+ yrs)` ; les modes de travail sont `On-site`, `Hybrid`, `Fully Remote`. Les valeurs manquantes ou incohérentes hors contraintes structurelles sont signalées par les contrôles communs, sans correction arbitraire. Un fichier accepté peut donc donner des mesures indisponibles, notamment dans les coordonnées parallèles si les profils sont incomplets.
+
+`js/dataset.js` valide et prépare le CSV avant de le conserver dans IndexedDB. Une erreur de validation ou d’écriture conserve le fichier actif précédent. Le contenu n’est jamais envoyé au serveur et ne remplace pas le CSV du dépôt. Il reste disponible entre les pages et après rechargement sur la même origine (protocole, hôte et port), jusqu’au retour au fichier du projet ou à la suppression du stockage du site. Changer de port ou de navigateur ne transfère pas ce choix.
+
+Le bouton de retour au fichier du projet vérifie d’abord que celui-ci est lisible, puis supprime le CSV importé. En cas de stockage inaccessible ou de fichier conservé incompatible, les pages utilisent le fichier du projet avec un message explicite. La source active est indiquée sur l’accueil et près du compteur de chaque visualisation. Les limites particulières restent celles des représentations : la carte ne positionne que les villes connues de sa table locale ; les catégories inconnues rejoignent « Autres métiers » dans le regroupement en familles.
 
 ## Préparation commune
 
@@ -37,7 +60,7 @@ Les champs `experience_level` et `years_of_experience` restent distincts. De mê
 
 ## Chargement et API
 
-`js/app.js` lit le CSV avec `d3.csv()`, appelle `JobData.prepareData()` puis transmet l’état aux abonnés. Le chemin est résolu depuis le script avec `new URL()`, indépendamment du dossier de la page HTML.
+`js/dataset.js` charge le CSV choisi ou lit le fichier du projet avec `d3.csv()`, puis appelle `JobData.prepareData()`. Il expose `JobDataset.load()`, `JobDataset.importFile(file)` et `JobDataset.reset()`. `js/home.js` pilote le choix depuis l’accueil ; `js/app.js` reçoit les données via `JobDataset.load()` puis transmet l’état aux abonnés. Le chemin du fichier par défaut est résolu depuis le script avec `new URL()`, indépendamment du dossier de la page HTML. L’état inclut `source: { name, imported }` en plus des offres, du bilan et des filtres.
 
 ```js
 JobApp.subscribe(({ jobs, filteredJobs, quality, filters }) => {
@@ -53,7 +76,7 @@ Les visualisations 2 et 3 utilisent ces filtres communs avec des contrôles adap
 
 ## Organisation et D3
 
-Chaque dossier de visualisation contient sa page HTML, ses styles, son script et son aperçu. Les pages chargent avec `defer`, dans l’ordre : D3, `js/data.js`, `js/app.js`, puis leur script. `JobData` et `JobApp` sont les interfaces partagées. Les calculs et interactions particuliers restent dans les dossiers des visualisations.
+Chaque dossier de visualisation contient sa page HTML, ses styles, son script et son aperçu. Les pages chargent avec `defer`, dans l’ordre : D3, `js/data.js`, `js/dataset.js`, `js/app.js`, puis leur script. `JobData`, `JobDataset` et `JobApp` sont les interfaces partagées. L’accueil utilise `js/home.js` à la place de `js/app.js`. Les calculs et interactions particuliers restent dans les dossiers des visualisations.
 
 | Visualisation | Calcul principal | Rôle de D3 |
 | --- | --- | --- |
