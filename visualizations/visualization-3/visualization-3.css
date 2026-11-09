@@ -1,11 +1,10 @@
 .heatmap-page .intro { padding-block: 16px; }
 .heatmap-page .intro > p:first-child { margin: 0 0 8px; font-size: 12px; }
 .heatmap-page h1 { font-size: clamp(24px, 3vw, 32px); }
-.heatmap-page .intro-text { margin-top: 6px; font-size: 14px; }
-#visualization-3 { display: block; place-items: normal; position: relative; padding: 16px; border-style: solid; }
-.heatmap-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+#visualization-3 { display: block; position: relative; }
+.heatmap-controls { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-bottom: 10px; }
 .heatmap-controls > .heatmap-options { margin: 0; }
-.heatmap-controls > .heatmap-options[open] { grid-column: 1 / -1; }
+.heatmap-controls > .heatmap-options[open] { flex-basis: 100%; }
 .heatmap-filter-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-block: 12px; }
 .heatmap-filter-fields label { display: grid; gap: 4px; font-size: 13px; }
 .heatmap-filter-fields select { min-width: 0; width: 100%; }
@@ -18,10 +17,18 @@
 .heatmap-help, .heatmap-summary, .heatmap-legend, .heatmap-options { font-size: 12px; }
 .heatmap-help { color: var(--muted); margin-block: 6px; }
 .heatmap-summary { margin-block: 6px; }
-.heatmap-options { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-block: 12px; }
+.heatmap-options { padding: 4px 0; margin-block: 12px; }
 .heatmap-options > summary { cursor: pointer; }
+.heatmap-view-options { margin-top: 12px; font-size: 12px; }
+.heatmap-view-options > summary { width: fit-content; cursor: pointer; color: var(--muted); }
+.heatmap-view-options[open] > summary { color: var(--text); }
+.heatmap-view-options .heatmap-toolbar { gap: 12px 20px; margin-block: 12px 8px; }
+.heatmap-view-options .heatmap-toolbar label { font-size: 12px; gap: 3px; }
+.heatmap-view-options select { padding: 6px 8px; border-radius: 3px; font-size: 12px; }
+.heatmap-view-options .heatmap-reset { margin-left: auto; padding: 6px 0; border: 0; background: transparent; color: var(--muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.heatmap-view-options .heatmap-reset:hover { color: var(--text); }
 .heatmap-selection { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
-.heatmap-selection fieldset { min-width: 0; margin: 0; border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+.heatmap-selection fieldset { min-width: 0; margin: 0; border: 0; padding: 0; }
 .heatmap-selection legend { font-weight: 600; }
 .heatmap-search { width: 100%; }
 .heatmap-checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 4px 12px; max-height: 220px; overflow-y: auto; margin-top: 10px; padding: 4px; }
@@ -30,6 +37,10 @@
 .heatmap-scroll { width: 100%; overflow: auto; max-height: 740px; border: 1px solid var(--border); border-radius: 6px; background: white; }
 .heatmap-scroll svg { display: block; max-width: none; }
 .heatmap-axis { fill: var(--text); font-size: 11px; }
+.heatmap-axis.is-active { fill: #153f58; font-weight: 600; }
+.heatmap-reading-guide rect { fill: none; stroke: #51768c; stroke-width: 1.5; stroke-opacity: .65; }
+.heatmap-row-marker { fill: #eaf1f6; }
+.heatmap-column-marker { fill: #51768c; }
 .heatmap-cell { cursor: pointer; stroke: white; stroke-width: 1; }
 .heatmap-cell:hover, .heatmap-cell:focus, .heatmap-cell.is-selected { stroke: #111f2b; stroke-width: 2.5; outline: none; }
 .heatmap-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-block: 8px; }
@@ -41,7 +52,7 @@
 .heatmap-tooltip { position: fixed; z-index: 5; max-width: min(280px, calc(100vw - 24px)); padding: 10px 12px; background: var(--text); color: white; border-radius: 6px; box-shadow: 0 3px 12px #202e3826; font-size: 12px; white-space: pre-line; }
 .heatmap-empty { padding: 16px; font-size: 13px; }
 @media (max-width: 700px) {
+  .heatmap-view-options .heatmap-reset { margin-left: 0; }
   .heatmap-selection { grid-template-columns: 1fr; }
-  .heatmap-controls, .heatmap-filter-fields { grid-template-columns: 1fr; }
-  #visualization-3 { padding: 10px; }
+  .heatmap-filter-fields { grid-template-columns: 1fr; }
 }

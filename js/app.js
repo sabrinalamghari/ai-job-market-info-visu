@@ -1,5 +1,4 @@
 const JobApp = (() => {
-  const csvUrl = new URL("../data/ai_jobs_market_2025_2026.csv", document.currentScript.src);
   const status = document.getElementById("data-status");
   const listeners = new Set();
   const emptyFilters = { job_category: "", job_family: "", experience_level: "", country: "", remote_work: "", industry: "", company_size: "", education_required: "" };
@@ -88,9 +87,15 @@ const JobApp = (() => {
   async function loadData() {
     if (status) status.textContent = "Chargement des données…";
     try {
-      const rows = await d3.csv(csvUrl);
-      const { jobs, quality } = JobData.prepareData(rows);
-      state = { jobs, filteredJobs: jobs, quality, filters: { ...emptyFilters } };
+      const { jobs, quality, source, warning } = await JobDataset.load();
+      state = { jobs, filteredJobs: jobs, quality, source, filters: { ...emptyFilters } };
+      if (warning) {
+        const notice = document.createElement("p");
+        notice.className = "dataset-warning";
+        notice.setAttribute("role", "status");
+        notice.textContent = warning;
+        status.closest(".section-heading").after(notice);
+      }
       console.log("Bilan de qualité des données :", quality);
       updateFilteredJobs();
     } catch (error) {

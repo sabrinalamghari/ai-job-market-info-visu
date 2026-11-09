@@ -262,8 +262,7 @@
 
     categorySelect.property("value", category);
     upButton.property("hidden", !category);
-    root.select(".treemap-current").text(category
-      ? `Catégorie : ${category}` : (grouped ? "Toutes les catégories" : "Tous les métiers"));
+    root.select(".treemap-path").property("hidden", !category);
     root.select(".treemap-message").text(scope.length ? "" : "Aucune offre ne correspond à ces filtres.");
     renderLegend();
 
